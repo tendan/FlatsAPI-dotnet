@@ -24,13 +24,19 @@ namespace FlatsAPI.Controllers
         }
 
         [HttpGet("free")]
-        public ActionResult GetFreeFlats() 
+        public ActionResult GetFreeFlats()
         {
             return NoContent();
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetSingleFlat([FromRoute]int id) {
+        public ActionResult GetSingleFlat([FromRoute] int id) {
+            return NoContent();
+        }
+
+        [HttpGet("{id}/rents")]
+        public ActionResult GetSingleFlatRents([FromRoute] int id)
+        {
             return NoContent();
         }
 

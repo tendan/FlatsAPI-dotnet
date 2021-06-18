@@ -22,6 +22,12 @@ namespace FlatsAPI.Controllers
             return NoContent();
         }
 
+        [HttpGet("{id}/rents")]
+        public ActionResult GetSingleTenantRentsById([FromRoute]int id)
+        {
+            return NoContent();
+        }
+
         [HttpDelete("{id}")]
         public ActionResult DeleteTenantById([FromRoute]int id)
         {
