@@ -30,6 +30,11 @@ namespace FlatsAPI.Controllers
         {
             return NoContent();
         }
+        [HttpGet("user/{email}/rents")]
+        public ActionResult GetUserRentsByEmail([FromRoute]string email)
+        {
+            return NoContent();
+        }
         /**
          * Probably doesn't work temporary
          */
