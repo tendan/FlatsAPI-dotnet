@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using FlatsAPI.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -11,16 +12,14 @@ namespace FlatsAPI.Controllers
     [Route("api/account")]
     public class AccountController : Controller
     {
-        // Need to add dto
         [HttpPost("register")]
-        public ActionResult CreateAccount()
+        public ActionResult CreateAccount([FromBody]CreateAccountDto createAccountDto)
         {
             return Ok();
         }
 
         [HttpPost("login")]
-        // Need to add dto
-        public ActionResult Login()
+        public ActionResult Login([FromBody]LoginDto loginDto)
         {
             return Ok();
         }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FlatsAPI.Models;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace FlatsAPI.Controllers
     {
         [HttpPost]
         // Need to add dto
-        public ActionResult CreateNewBlock()
+        public ActionResult CreateNewBlock([FromBody]CreateBlockOfFlatsDto createBlockOfFlatsDto)
         {
             return Ok();
         }

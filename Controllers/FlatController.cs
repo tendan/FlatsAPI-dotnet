@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FlatsAPI.Models;
 
 namespace FlatsAPI.Controllers
 {
@@ -12,7 +13,7 @@ namespace FlatsAPI.Controllers
     {
         // need to add dto
         [HttpPost]
-        public ActionResult AddNewFlat()
+        public ActionResult AddNewFlat([FromBody]CreateFlatDto createFlatDto)
         {
             return Ok();
         }
