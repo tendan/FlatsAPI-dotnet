@@ -27,15 +27,16 @@ namespace FlatsAPI.Entities
         public int BlockOfFlatsId { get; set; }
         public virtual BlockOfFlats BlockOfFlats { get; set; }
         
-        public int OwnerId { get; set; }
+        public int? OwnerId { get; set; }
         public virtual Account Owner { get; set; }
         
         public virtual ICollection<Account> Tenants { get; set; }
 
-        public OwnerShip OwnerShip { get; set; }
+        public OwnerShip? OwnerShip { get; set; }
 
+        [Required]
         public float PriceWhenBought { get; set; }
-        public float PricePerMeterSquaredWhenRented { get; set; }
+        public float? PricePerMeterSquaredWhenRented { get; set; }
 
         public virtual ICollection<Rent> Rents { get; set; }
     }

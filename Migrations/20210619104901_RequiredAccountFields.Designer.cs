@@ -3,14 +3,16 @@ using System;
 using FlatsAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FlatsAPI.Migrations
 {
     [DbContext(typeof(FlatsDbContext))]
-    partial class FlatsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210619104901_RequiredAccountFields")]
+    partial class RequiredAccountFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,13 +126,13 @@ namespace FlatsAPI.Migrations
                     b.Property<int>("NumberOfRooms")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OwnerId")
+                    b.Property<int>("OwnerId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("OwnerShip")
+                    b.Property<int>("OwnerShip")
                         .HasColumnType("int");
 
-                    b.Property<float?>("PricePerMeterSquaredWhenRented")
+                    b.Property<float>("PricePerMeterSquaredWhenRented")
                         .HasColumnType("float");
 
                     b.Property<float>("PriceWhenBought")
@@ -244,7 +246,9 @@ namespace FlatsAPI.Migrations
 
                     b.HasOne("FlatsAPI.Entities.Account", "Owner")
                         .WithMany()
-                        .HasForeignKey("OwnerId");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("BlockOfFlats");
 

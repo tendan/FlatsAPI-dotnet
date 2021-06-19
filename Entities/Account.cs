@@ -16,9 +16,14 @@ namespace FlatsAPI.Entities
         [Required]
         public string Username { get; set; }
         [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string LastName { get; set; }
+        [Required]
         public string Password { get; set; }
 
-        public int RoleId { get; set; }
+        [Required]
+        public int RoleId { get; set; } = 0;
         public Role Role { get; set; }
 
         public virtual ICollection<Rent> Rents { get; set; }

@@ -19,8 +19,8 @@ namespace FlatsAPI.Entities
         [Required]
         public float Margin { get; set; }
 
-        public int OwnerId { get; set; }
-        public Account Owner { get; set; }
+        public int? OwnerId { get; set; }
+        public virtual Account Owner { get; set; }
 
         public virtual ICollection<Flat> Flats { get; set; }
     }
