@@ -15,6 +15,7 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using FlatsAPI.Models;
 using FlatsAPI.Models.Validators;
+using Microsoft.AspNetCore.Identity;
 
 namespace FlatsAPI
 {
@@ -29,17 +30,26 @@ namespace FlatsAPI
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {
-            services.AddDbContext<FlatsDbContext>();
+        {   
             services.AddControllers().AddFluentValidation();
+            services.AddDbContext<FlatsDbContext>();
+
+            services.AddScoped<FlatsSeeder>();
+
             services.AddAutoMapper(this.GetType().Assembly);
+
+            services.AddScoped<IPasswordHasher<Account>, PasswordHasher<Account>>();
+
             services.AddScoped<IValidator<CreateAccountDto>, CreateAccountDtoValidator>();
             
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, FlatsSeeder seeder)
         {
+
+            seeder.Seed();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
