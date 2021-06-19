@@ -20,6 +20,12 @@ namespace FlatsAPI.Models.Validators
                 .MinimumLength(6)
                 .MaximumLength(30);
 
+            RuleFor(a => a.FirstName)
+                .NotEmpty();
+
+            RuleFor(a => a.LastName)
+                .NotEmpty();
+
             RuleFor(a => a.Password)
                 .NotEmpty()
                 .MinimumLength(8)

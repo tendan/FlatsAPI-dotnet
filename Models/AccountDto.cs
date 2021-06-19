@@ -9,6 +9,7 @@ namespace FlatsAPI.Models
     {
         public string Email { get; set; }
         public string Username { get; set; }
+        public string FullName { get; set; }
         public RoleDto Role { get; set; }
     }
 }
