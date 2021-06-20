@@ -16,6 +16,10 @@ using FluentValidation.AspNetCore;
 using FlatsAPI.Models;
 using FlatsAPI.Models.Validators;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using FlatsAPI.Services;
 
 namespace FlatsAPI
 {
@@ -30,7 +34,31 @@ namespace FlatsAPI
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
-        {   
+        {
+            // Authentication config
+
+            var authenticationSettings = new AuthenticationSettings();
+
+            Configuration.GetSection("Authentication").Bind(authenticationSettings);
+
+            services.AddSingleton(authenticationSettings);
+            services.AddAuthentication(option =>
+            {
+                option.DefaultAuthenticateScheme = "Bearer";
+                option.DefaultScheme = "Bearer";
+                option.DefaultChallengeScheme = "Bearer";
+            }).AddJwtBearer(cfg =>
+            {
+                cfg.RequireHttpsMetadata = false;
+                cfg.SaveToken = true;
+                cfg.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = authenticationSettings.JwtIssuer,
+                    ValidAudience = authenticationSettings.JwtIssuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(authenticationSettings.JwtKey))
+                };
+            });
+
             services.AddControllers().AddFluentValidation();
             services.AddDbContext<FlatsDbContext>();
 
@@ -38,10 +66,17 @@ namespace FlatsAPI
 
             services.AddAutoMapper(this.GetType().Assembly);
 
+            // Password hashers
             services.AddScoped<IPasswordHasher<Account>, PasswordHasher<Account>>();
 
+            // Validators
             services.AddScoped<IValidator<CreateAccountDto>, CreateAccountDtoValidator>();
-            
+
+            // Services
+            services.AddScoped<IUserContextService, UserContextService>();
+
+            services.AddHttpContextAccessor();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
