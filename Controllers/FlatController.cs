@@ -42,7 +42,7 @@ namespace FlatsAPI.Controllers
         }
 
         [HttpPost("{flatId}/apply")]
-        public ActionResult ApplyFlatForTenant([FromRoute]int flatId, [FromQuery]int tenantId, [FromQuery]string chosen) {
+        public ActionResult ApplyFlatForTenant([FromRoute]int flatId, [FromQuery]int tenantId, [FromQuery]OwnerShip chosen) {
             return Ok();
         }
 

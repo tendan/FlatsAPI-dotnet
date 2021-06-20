@@ -25,12 +25,12 @@ namespace FlatsAPI.Controllers
         }
 
         [HttpGet("user/{email}")]
-        public ActionResult GetUserByEmail([FromRoute] string email)
+        public ActionResult GetAccountByEmail([FromRoute] string email)
         {
             return NoContent();
         }
         [HttpGet("user/{email}/rents")]
-        public ActionResult GetUserRentsByEmail([FromRoute]string email)
+        public ActionResult GetAccountRentsByEmail([FromRoute]string email)
         {
             return NoContent();
         }
