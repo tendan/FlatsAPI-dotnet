@@ -27,6 +27,11 @@ namespace FlatsAPI.Controllers
         {
             return NoContent();
         }
+        [HttpGet("{id}/flats")]
+        public ActionResult GetAllFlatsFromSpecifiedBlock([FromRoute]int id)
+        {
+            return NoContent();
+        }
         [HttpDelete("{id}")]
         public ActionResult DeleteBlock([FromRoute]int id)
         {

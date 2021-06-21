@@ -11,6 +11,7 @@ namespace FlatsAPI.Services
         void Create(CreateBlockOfFlatsDto dto);
         PagedResult<BlockOfFlatsDto> GetAll();
         BlockOfFlatsDto GetById(int id);
+        PagedResult<FlatDto> GetAllFlatsById(int id);
         void DeleteById(int id);
     }
     public class BlockOfFlatsService : IBlockOfFlatsService
@@ -32,6 +33,11 @@ namespace FlatsAPI.Services
         }
 
         public BlockOfFlatsDto GetById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public PagedResult<FlatDto> GetAllFlatsById(int id)
         {
             throw new NotImplementedException();
         }
