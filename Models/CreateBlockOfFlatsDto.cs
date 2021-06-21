@@ -11,6 +11,6 @@ namespace FlatsAPI.Models
         public string PostalCode { get; set; }
         public int Floors { get; set; }
         public float Margin { get; set; }
-        public int OwnerId { get; set; }
+        public int? OwnerId { get; set; }
     }
 }
