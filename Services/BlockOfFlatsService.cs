@@ -8,30 +8,30 @@ namespace FlatsAPI.Services
 {
     public interface IBlockOfFlatsService
     {
-        void CreateBlockOfFlats(CreateBlockOfFlatsDto dto);
-        ICollection<BlockOfFlatsDto> GetAllBlocksOfFlats();
-        BlockOfFlatsDto GetSpecifiedBlockById(int id);
-        void DeleteBlockById(int id);
+        void Create(CreateBlockOfFlatsDto dto);
+        ICollection<BlockOfFlatsDto> GetAll();
+        BlockOfFlatsDto GetById(int id);
+        void DeleteById(int id);
     }
     public class BlockOfFlatsService : IBlockOfFlatsService
     {
         public BlockOfFlatsService() { }
-        public void CreateBlockOfFlats(CreateBlockOfFlatsDto dto)
+        public void Create(CreateBlockOfFlatsDto dto)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteBlockById(int id)
+        public void DeleteById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<BlockOfFlatsDto> GetAllBlocksOfFlats()
+        public ICollection<BlockOfFlatsDto> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public BlockOfFlatsDto GetSpecifiedBlockById(int id)
+        public BlockOfFlatsDto GetById(int id)
         {
             throw new NotImplementedException();
         }

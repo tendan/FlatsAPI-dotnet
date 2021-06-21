@@ -6,8 +6,8 @@
 
   <ItemGroup>
     <Folder Include="Authorization\" />
-    <Folder Include="Middleware\" />
     <Folder Include="Exceptions\" />
+    <Folder Include="Middleware\Mappings\" />
   </ItemGroup>
 
   <ItemGroup>

@@ -8,42 +8,42 @@ namespace FlatsAPI.Services
 {
     public interface IFlatService
     {
-        void CreateFlat(CreateFlatDto dto);
-        ICollection<FlatDto> GetAllFlats();
-        FlatDto GetSpecifiedFlatById(int id);
-        ICollection<RentDto> GetSpecifiedFlatRentsByFlatsId(int id);
-        void ApplyTenantForFlatByIds(int flatId, int tenantId, OwnerShip ownerShip);
-        void DeleteFlatById(int id);
+        void Create(CreateFlatDto dto);
+        ICollection<FlatDto> GetAll();
+        FlatDto GetById(int id);
+        ICollection<RentDto> GetRentsById(int id);
+        void ApplyTenantByIds(int flatId, int tenantId, OwnerShip ownerShip);
+        void Delete(int id);
     }
     public class FlatService : IFlatService
     {
         public FlatService() { }
-        public void ApplyTenantForFlatByIds(int flatId, int tenantId, OwnerShip ownerShip)
+        public void ApplyTenantByIds(int flatId, int tenantId, OwnerShip ownerShip)
         {
             throw new NotImplementedException();
         }
 
-        public void CreateFlat(CreateFlatDto dto)
+        public void Create(CreateFlatDto dto)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteFlatById(int id)
+        public void Delete(int id)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<FlatDto> GetAllFlats()
+        public ICollection<FlatDto> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public FlatDto GetSpecifiedFlatById(int id)
+        public FlatDto GetById(int id)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<RentDto> GetSpecifiedFlatRentsByFlatsId(int id)
+        public ICollection<RentDto> GetRentsById(int id)
         {
             throw new NotImplementedException();
         }

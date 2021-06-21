@@ -8,22 +8,22 @@ namespace FlatsAPI.Services
 {
     public interface IAccountService
     {
-        void CreateAccount(CreateAccountDto dto);
+        void Create(CreateAccountDto dto);
         string GenerateJwt(LoginDto dto);
-        AccountDto GetSpecifiedAccountByEmail(string email);
-        ICollection<RentDto> GetSpecifiedAccountRentsByEmail(string email);
-        void DeleteAccountById(int id);
+        AccountDto GetByEmail(string email);
+        ICollection<RentDto> GetRentsByEmail(string email);
+        void DeleteById(int id);
     }
     public class AccountService : IAccountService
     {
         public AccountService() { }
 
-        public void CreateAccount(CreateAccountDto dto)
+        public void Create(CreateAccountDto dto)
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteAccountById(int id)
+        public void DeleteById(int id)
         {
             throw new NotImplementedException();
         }
@@ -33,12 +33,12 @@ namespace FlatsAPI.Services
             throw new NotImplementedException();
         }
 
-        public AccountDto GetSpecifiedAccountByEmail(string email)
+        public AccountDto GetByEmail(string email)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<RentDto> GetSpecifiedAccountRentsByEmail(string email)
+        public ICollection<RentDto> GetRentsByEmail(string email)
         {
             throw new NotImplementedException();
         }
