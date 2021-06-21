@@ -11,7 +11,7 @@ namespace FlatsAPI.Services
         void Create(CreateAccountDto dto);
         string GenerateJwt(LoginDto dto);
         AccountDto GetByEmail(string email);
-        ICollection<RentDto> GetRentsByEmail(string email);
+        PagedResult<RentDto> GetRentsByEmail(string email);
         void DeleteById(int id);
     }
     public class AccountService : IAccountService
@@ -38,7 +38,7 @@ namespace FlatsAPI.Services
             throw new NotImplementedException();
         }
 
-        public ICollection<RentDto> GetRentsByEmail(string email)
+        public PagedResult<RentDto> GetRentsByEmail(string email)
         {
             throw new NotImplementedException();
         }

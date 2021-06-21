@@ -9,7 +9,7 @@ namespace FlatsAPI.Services
     public interface IBlockOfFlatsService
     {
         void Create(CreateBlockOfFlatsDto dto);
-        ICollection<BlockOfFlatsDto> GetAll();
+        PagedResult<BlockOfFlatsDto> GetAll();
         BlockOfFlatsDto GetById(int id);
         void DeleteById(int id);
     }
@@ -26,7 +26,7 @@ namespace FlatsAPI.Services
             throw new NotImplementedException();
         }
 
-        public ICollection<BlockOfFlatsDto> GetAll()
+        public PagedResult<BlockOfFlatsDto> GetAll()
         {
             throw new NotImplementedException();
         }

@@ -9,9 +9,9 @@ namespace FlatsAPI.Services
     public interface IFlatService
     {
         void Create(CreateFlatDto dto);
-        ICollection<FlatDto> GetAll();
+        PagedResult<FlatDto> GetAll();
         FlatDto GetById(int id);
-        ICollection<RentDto> GetRentsById(int id);
+        PagedResult<RentDto> GetRentsById(int id);
         void ApplyTenantByIds(int flatId, int tenantId, OwnerShip ownerShip);
         void Delete(int id);
     }
@@ -33,7 +33,7 @@ namespace FlatsAPI.Services
             throw new NotImplementedException();
         }
 
-        public ICollection<FlatDto> GetAll()
+        public PagedResult<FlatDto> GetAll()
         {
             throw new NotImplementedException();
         }
@@ -43,7 +43,7 @@ namespace FlatsAPI.Services
             throw new NotImplementedException();
         }
 
-        public ICollection<RentDto> GetRentsById(int id)
+        public PagedResult<RentDto> GetRentsById(int id)
         {
             throw new NotImplementedException();
         }
