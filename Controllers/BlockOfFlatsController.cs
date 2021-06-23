@@ -18,7 +18,7 @@ namespace FlatsAPI.Controllers
             return Ok();
         }
         [HttpGet]
-        public ActionResult GetAllBlocks()
+        public ActionResult GetAllBlocks([FromQuery]SearchQuery query)
         {
             return NoContent();
         }
@@ -28,7 +28,7 @@ namespace FlatsAPI.Controllers
             return NoContent();
         }
         [HttpGet("{id}/flats")]
-        public ActionResult GetAllFlatsFromSpecifiedBlock([FromRoute]int id)
+        public ActionResult GetAllFlatsFromSpecifiedBlock([FromQuery]SearchQuery query, [FromRoute]int id)
         {
             return NoContent();
         }

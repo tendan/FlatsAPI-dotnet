@@ -30,7 +30,7 @@ namespace FlatsAPI.Controllers
             return NoContent();
         }
         [HttpGet("user/{email}/rents")]
-        public ActionResult GetAccountRentsByEmail([FromRoute]string email)
+        public ActionResult GetAccountRentsByEmail([FromQuery]SearchQuery query, [FromRoute]string email)
         {
             return NoContent();
         }

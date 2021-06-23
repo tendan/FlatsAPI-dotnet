@@ -19,13 +19,13 @@ namespace FlatsAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetAllFlats()
+        public ActionResult GetAllFlats([FromQuery]SearchQuery query)
         {
             return NoContent();
         }
 
         [HttpGet("free")]
-        public ActionResult GetFreeFlats()
+        public ActionResult GetFreeFlats([FromQuery] SearchQuery query)
         {
             return NoContent();
         }
@@ -36,7 +36,7 @@ namespace FlatsAPI.Controllers
         }
 
         [HttpGet("{id}/rents")]
-        public ActionResult GetSingleFlatRents([FromRoute] int id)
+        public ActionResult GetSingleFlatRents([FromQuery]SearchQuery query, [FromRoute] int id)
         {
             return NoContent();
         }
