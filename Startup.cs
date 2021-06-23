@@ -20,6 +20,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FlatsAPI.Services;
+using FlatsAPI.Middleware;
 
 namespace FlatsAPI
 {
@@ -65,6 +66,10 @@ namespace FlatsAPI
             services.AddScoped<FlatsSeeder>();
 
             services.AddAutoMapper(this.GetType().Assembly);
+
+            // Middlewares
+            services.AddScoped<ErrorHandlingMiddleware>();
+
 
             // Password hashers
             services.AddScoped<IPasswordHasher<Account>, PasswordHasher<Account>>();

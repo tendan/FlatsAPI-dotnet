@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <Folder Include="Authorization\" />
-    <Folder Include="Exceptions\" />
   </ItemGroup>
 
   <ItemGroup>
