@@ -31,6 +31,13 @@ namespace FlatsAPI.Models.Validators
                 .MinimumLength(8)
                 .MaximumLength(50);
 
+            RuleFor(a => a.ConfirmPassword)
+                .Equal(e => e.Password);
+
+            RuleFor(a => a.RoleId)
+                .NotEqual(3)
+                .WithMessage("You cannot create Admin account");
+
             RuleFor(a => a.Email)
                 .Custom((value, context) =>
                 {
