@@ -24,7 +24,7 @@ namespace FlatsAPI.Entities
         public float PriceWithTax { get; set; }
 
         public int FlatId { get; set; }
-        public virtual Flat flat { get; set; }
+        public virtual Flat Flat { get; set; }
 
         public int OwnerId { get; set; }
         public virtual Account Owner { get; set; }
