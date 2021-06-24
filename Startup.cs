@@ -21,6 +21,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FlatsAPI.Services;
 using FlatsAPI.Middleware;
+using FlatsAPI.Settings;
 
 namespace FlatsAPI
 {
