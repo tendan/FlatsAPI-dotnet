@@ -13,6 +13,7 @@ namespace FlatsAPI.Middleware.Mappings
         public FlatMappingProfile()
         {
             CreateMap<Flat, FlatInRentDto>();
+            CreateMap<Flat, FlatInBlockOfFlatsDto>();
             CreateMap<Flat, FlatDto>();
             CreateMap<CreateFlatDto, Flat>();
         }

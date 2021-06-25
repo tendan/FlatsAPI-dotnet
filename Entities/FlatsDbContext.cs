@@ -30,6 +30,21 @@ namespace FlatsAPI.Entities
                 .HasOne(r => r.Owner)
                 .WithMany(o => o.OwnerShips);
 
+            modelBuilder.Entity<Rent>()
+                .HasOne(r => r.Flat)
+                .WithMany(f => f.Rents)
+                .IsRequired();
+
+            modelBuilder.Entity<BlockOfFlats>()
+                .HasMany(b => b.Flats)
+                .WithOne(f => f.BlockOfFlats);
+
+            modelBuilder.Entity<Flat>()
+                .HasOne(f => f.BlockOfFlats)
+                .WithMany(b => b.Flats)
+                .HasForeignKey(f => f.BlockOfFlatsId)
+                .IsRequired();
+
             base.OnModelCreating(modelBuilder);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

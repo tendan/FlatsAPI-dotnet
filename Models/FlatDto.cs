@@ -5,12 +5,8 @@ using System.Threading.Tasks;
 
 namespace FlatsAPI.Models
 {
-    public class FlatDto : FlatInRentDto
+    public class FlatDto : FlatInBlockOfFlatsDto
     {
-        public virtual AccountDto Owner { get; set; }
-
         public virtual BlockOfFlatsDto BlockOfFlats { get; set; }
-
-        public virtual ICollection<AccountDto> Tenants { get; set; }
     }
 }
