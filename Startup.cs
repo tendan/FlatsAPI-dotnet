@@ -61,6 +61,8 @@ namespace FlatsAPI
                 };
             });
 
+            services.AddAuthorization();
+
             services.AddControllers().AddFluentValidation();
             services.AddDbContext<FlatsDbContext>();
 
@@ -80,6 +82,8 @@ namespace FlatsAPI
 
             // Services
             services.AddScoped<IUserContextService, UserContextService>();
+            services.AddScoped<IBlockOfFlatsService, BlockOfFlatsService>();
+            services.AddScoped<IAccountService, AccountService>();
 
             services.AddHttpContextAccessor();
 
