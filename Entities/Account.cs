@@ -21,6 +21,8 @@ namespace FlatsAPI.Entities
         public string LastName { get; set; }
         [Required]
         public string Password { get; set; }
+        [Required]
+        public DateTime DateOfBirth { get; set; }
 
         [Required]
         public int RoleId { get; set; } = 0;
