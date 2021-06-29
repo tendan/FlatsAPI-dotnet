@@ -25,7 +25,7 @@ namespace FlatsAPI.Controllers
         }
 
         [HttpGet("free")]
-        public ActionResult GetFreeFlats([FromQuery] SearchQuery query)
+        public ActionResult GetFreeFlats([FromQuery]SearchQuery query)
         {
             return NoContent();
         }

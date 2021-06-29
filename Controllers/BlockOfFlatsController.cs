@@ -1,8 +1,10 @@
 ﻿using FlatsAPI.Models;
+using FlatsAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace FlatsAPI.Controllers
@@ -11,31 +13,42 @@ namespace FlatsAPI.Controllers
     [Route("api/blocks")]
     public class BlockOfFlatsController : Controller
     {
+        private readonly IBlockOfFlatsService _blockOfFlatsService;
+
+        public BlockOfFlatsController(IBlockOfFlatsService blockOfFlatsService)
+        {
+            _blockOfFlatsService = blockOfFlatsService;
+        }
         [HttpPost]
         // Need to add dto
         public ActionResult CreateNewBlock([FromBody]CreateBlockOfFlatsDto createBlockOfFlatsDto)
         {
-            return Ok();
+            var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            var blockOfFlatsId = _blockOfFlatsService.Create(createBlockOfFlatsDto);
+
+            return Created($"/api/blocks/{userId}", null);
         }
         [HttpGet]
         public ActionResult GetAllBlocks([FromQuery]SearchQuery query)
         {
-            return NoContent();
+            return Ok(_blockOfFlatsService.GetAll(query));
         }
         [HttpGet("{id}")]
         public ActionResult GetSpecifiedBlock([FromRoute]int id)
         {
-            return NoContent();
+            return Ok(_blockOfFlatsService.GetById(id));
         }
         [HttpGet("{id}/flats")]
         public ActionResult GetAllFlatsFromSpecifiedBlock([FromQuery]SearchQuery query, [FromRoute]int id)
         {
-            return NoContent();
+            return Ok(_blockOfFlatsService.GetAllFlatsById(query, id));
         }
         [HttpDelete("{id}")]
         public ActionResult DeleteBlock([FromRoute]int id)
         {
-            return Ok();
+            _blockOfFlatsService.DeleteById(id);
+
+            return NoContent();
         }
     }
 }
