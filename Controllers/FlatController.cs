@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FlatsAPI.Models;
+using FlatsAPI.Services;
+using System.Security.Claims;
 
 namespace FlatsAPI.Controllers
 {
@@ -11,17 +13,26 @@ namespace FlatsAPI.Controllers
     [Route("api/flats")]
     public class FlatController : Controller
     {
+        private readonly IFlatService _flatService;
+
+        public FlatController(IFlatService flatService)
+        {
+            _flatService = flatService;
+        }
         // need to add dto
         [HttpPost]
         public ActionResult AddNewFlat([FromBody]CreateFlatDto createFlatDto)
         {
-            return Ok();
+            var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
+            var blockOfFlatsId = _flatService.Create(createFlatDto);
+
+            return Created($"/api/blocks/{userId}", null);
         }
 
         [HttpGet]
-        public ActionResult GetAllFlats([FromQuery]SearchQuery query)
+        public ActionResult<List<FlatDto>> GetAllFlats([FromQuery]SearchQuery query)
         {
-            return NoContent();
+            return Ok(_flatService.GetAll(query));
         }
 
         [HttpGet("free")]
@@ -31,24 +42,29 @@ namespace FlatsAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public ActionResult GetSingleFlat([FromRoute] int id) {
-            return NoContent();
+        public ActionResult<FlatDto> GetSingleFlat([FromRoute] int id) 
+        {
+            return Ok(_flatService.GetById(id));
         }
 
         [HttpGet("{id}/rents")]
-        public ActionResult GetSingleFlatRents([FromQuery]SearchQuery query, [FromRoute] int id)
+        public ActionResult<List<RentDto>> GetSingleFlatRents([FromQuery]SearchQuery query, [FromRoute] int id)
         {
-            return NoContent();
+            return Ok(_flatService.GetRentsById(query, id));
         }
 
         [HttpPost("{flatId}/apply")]
-        public ActionResult ApplyFlatForTenant([FromRoute]int flatId, [FromQuery]int tenantId, [FromQuery]OwnerShip chosen) {
+        public ActionResult ApplyFlatForTenant([FromRoute]int flatId, [FromQuery]int tenantId, [FromQuery]OwnerShip chosen) 
+        {
             return Ok();
         }
 
         [HttpDelete("{id}")]
-        public ActionResult RemoveFlat([FromRoute]int id) {
-            return Ok();
+        public ActionResult RemoveFlat([FromRoute]int id) 
+        {
+            _flatService.Delete(id);
+
+            return NoContent();
         }
 }
 }
