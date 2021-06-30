@@ -3,14 +3,16 @@ using System;
 using FlatsAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FlatsAPI.Migrations
 {
     [DbContext(typeof(FlatsDbContext))]
-    partial class FlatsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210630195215_ChangePermissionTableName")]
+    partial class ChangePermissionTableName
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -158,7 +160,12 @@ namespace FlatsAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("RoleId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("RoleId");
 
                     b.ToTable("permissions");
                 });
@@ -212,21 +219,6 @@ namespace FlatsAPI.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Roles");
-                });
-
-            modelBuilder.Entity("PermissionRole", b =>
-                {
-                    b.Property<int>("PermissionsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RolesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("PermissionsId", "RolesId");
-
-                    b.HasIndex("RolesId");
-
-                    b.ToTable("PermissionRole");
                 });
 
             modelBuilder.Entity("AccountRent", b =>
@@ -285,6 +277,13 @@ namespace FlatsAPI.Migrations
                     b.Navigation("Owner");
                 });
 
+            modelBuilder.Entity("FlatsAPI.Entities.Permission", b =>
+                {
+                    b.HasOne("FlatsAPI.Entities.Role", null)
+                        .WithMany("Permissions")
+                        .HasForeignKey("RoleId");
+                });
+
             modelBuilder.Entity("FlatsAPI.Entities.Rent", b =>
                 {
                     b.HasOne("FlatsAPI.Entities.Flat", "Flat")
@@ -304,21 +303,6 @@ namespace FlatsAPI.Migrations
                     b.Navigation("Owner");
                 });
 
-            modelBuilder.Entity("PermissionRole", b =>
-                {
-                    b.HasOne("FlatsAPI.Entities.Permission", null)
-                        .WithMany()
-                        .HasForeignKey("PermissionsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("FlatsAPI.Entities.Role", null)
-                        .WithMany()
-                        .HasForeignKey("RolesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("FlatsAPI.Entities.Account", b =>
                 {
                     b.Navigation("OwnerShips");
@@ -334,6 +318,11 @@ namespace FlatsAPI.Migrations
                     b.Navigation("Rents");
 
                     b.Navigation("Tenants");
+                });
+
+            modelBuilder.Entity("FlatsAPI.Entities.Role", b =>
+                {
+                    b.Navigation("Permissions");
                 });
 #pragma warning restore 612, 618
         }

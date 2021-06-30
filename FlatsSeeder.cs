@@ -45,6 +45,12 @@ namespace FlatsAPI
                     _dbContext.Flats.AddRange(flats);
                     _dbContext.SaveChanges();
                 }
+                if (!_dbContext.Permissions.Any())
+                {
+                    var permissions = GetPermissions();
+                    _dbContext.Permissions.AddRange(permissions);
+                    _dbContext.SaveChanges();
+                }
             }
         }
 
@@ -158,6 +164,43 @@ namespace FlatsAPI
                 }
             };
             return roles;
+        }
+
+        private ICollection<Permission> GetPermissions()
+        {
+            var permissions = new List<Permission>();
+            var modules = new List<string>() { "Account", "BlockOfFlats", "Flat" };
+
+            foreach (var moduleName in modules)
+            {
+                foreach (var permission in GeneratePermissionsForModule(moduleName))
+                {
+                    permissions.Add(new Permission() { Name = permission });
+                }
+            }
+
+            permissions.Add(new Permission() { Name = "Admin" });
+            return permissions;
+        }
+
+        private ICollection<Permission> GetTenantPermissions()
+        {
+            var permissions = new List<Permission>();
+
+            var modules = new List<string>() { "BlockOfFlats", "Flat" };
+
+            return permissions;
+        }
+
+        public ICollection<string> GeneratePermissionsForModule(string module)
+        {
+            return new List<string>()
+            {
+                $"{module}.Create",
+                $"{module}.Read",
+                $"{module}.Update",
+                $"{module}.Delete"
+            };
         }
     }
 }

@@ -46,6 +46,10 @@ namespace FlatsAPI.Entities
                 .HasForeignKey(f => f.BlockOfFlatsId)
                 .IsRequired();
 
+            modelBuilder.Entity<Role>()
+                .HasMany(r => r.Permissions)
+                .WithMany(p => p.Roles);
+
             base.OnModelCreating(modelBuilder);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
