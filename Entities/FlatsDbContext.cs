@@ -16,6 +16,7 @@ namespace FlatsAPI.Entities
         public DbSet<Flat> Flats { get; set; }
         public DbSet<Rent> Rents { get; set; }
         public DbSet<Role> Roles { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
         public FlatsDbContext(IConfiguration configuration)
         {
             Configuration = configuration;
