@@ -3,14 +3,16 @@ using System;
 using FlatsAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FlatsAPI.Migrations
 {
     [DbContext(typeof(FlatsDbContext))]
-    partial class FlatsDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210630191516_AddPermissionForRole")]
+    partial class AddPermissionForRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

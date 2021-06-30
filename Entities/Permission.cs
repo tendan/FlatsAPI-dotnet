@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace FlatsAPI.Entities
 {
-    public class Role
+    public class Permission
     {
         public int Id { get; set; }
+
         [Required]
         public string Name { get; set; }
-
-        public ICollection<Permission> Permissions { get; set; }
     }
 }
