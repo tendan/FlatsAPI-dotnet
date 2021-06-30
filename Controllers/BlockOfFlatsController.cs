@@ -29,17 +29,17 @@ namespace FlatsAPI.Controllers
             return Created($"/api/blocks/{userId}", null);
         }
         [HttpGet]
-        public ActionResult GetAllBlocks([FromQuery]SearchQuery query)
+        public ActionResult<List<BlockOfFlatsDto>> GetAllBlocks([FromQuery]SearchQuery query)
         {
             return Ok(_blockOfFlatsService.GetAll(query));
         }
         [HttpGet("{id}")]
-        public ActionResult GetSpecifiedBlock([FromRoute]int id)
+        public ActionResult<BlockOfFlatsDto> GetSpecifiedBlock([FromRoute]int id)
         {
             return Ok(_blockOfFlatsService.GetById(id));
         }
         [HttpGet("{id}/flats")]
-        public ActionResult GetAllFlatsFromSpecifiedBlock([FromQuery]SearchQuery query, [FromRoute]int id)
+        public ActionResult<List<FlatInBlockOfFlatsDto>> GetAllFlatsFromSpecifiedBlock([FromQuery]SearchQuery query, [FromRoute]int id)
         {
             return Ok(_blockOfFlatsService.GetAllFlatsById(query, id));
         }
