@@ -83,6 +83,7 @@ namespace FlatsAPI
             // Services
             services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<IBlockOfFlatsService, BlockOfFlatsService>();
+            services.AddScoped<IFlatService, FlatService>();
             services.AddScoped<IAccountService, AccountService>();
 
             services.AddHttpContextAccessor();
