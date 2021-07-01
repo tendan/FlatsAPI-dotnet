@@ -22,6 +22,7 @@ using System.Text;
 using FlatsAPI.Services;
 using FlatsAPI.Middleware;
 using FlatsAPI.Settings;
+using FlatsAPI.Settings.Permissions;
 
 namespace FlatsAPI
 {
@@ -66,7 +67,7 @@ namespace FlatsAPI
             services.AddControllers().AddFluentValidation();
             services.AddDbContext<FlatsDbContext>();
 
-            services.AddScoped<FlatsSeeder>();
+            
 
             services.AddAutoMapper(this.GetType().Assembly);
 
@@ -85,6 +86,9 @@ namespace FlatsAPI
             services.AddScoped<IBlockOfFlatsService, BlockOfFlatsService>();
             services.AddScoped<IFlatService, FlatService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IPermissionContext, PermissionContext>();
+            
+            services.AddScoped<FlatsSeeder>();
 
             services.AddHttpContextAccessor();
 

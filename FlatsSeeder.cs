@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using FlatsAPI.Settings;
+using FlatsAPI.Settings.Permissions;
 
 namespace FlatsAPI
 {
@@ -11,11 +13,13 @@ namespace FlatsAPI
     {
         private readonly FlatsDbContext _dbContext;
         private readonly IPasswordHasher<Account> _passwordHasher;
+        private readonly IPermissionContext _permissionContext;
 
-        public FlatsSeeder(FlatsDbContext dbContext, IPasswordHasher<Account> passwordHasher)
+        public FlatsSeeder(FlatsDbContext dbContext, IPasswordHasher<Account> passwordHasher, IPermissionContext permissionContext)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
+            _permissionContext = permissionContext;
         }
         public void Seed()
         {
@@ -43,6 +47,11 @@ namespace FlatsAPI
                 {
                     var flats = GetFlats();
                     _dbContext.Flats.AddRange(flats);
+                    _dbContext.SaveChanges();
+                }
+                if (_dbContext.Permissions.Any())
+                {
+                    _dbContext.Permissions.RemoveRange(_dbContext.Permissions.ToList());
                     _dbContext.SaveChanges();
                 }
                 if (!_dbContext.Permissions.Any())
@@ -169,17 +178,15 @@ namespace FlatsAPI
         private ICollection<Permission> GetPermissions()
         {
             var permissions = new List<Permission>();
-            var modules = new List<string>() { "Account", "BlockOfFlats", "Flat" };
 
-            foreach (var moduleName in modules)
+            var permissionStrings = _permissionContext.GetAllModulesPermissions();
+
+            
+            foreach (var permission in permissionStrings)
             {
-                foreach (var permission in GeneratePermissionsForModule(moduleName))
-                {
-                    permissions.Add(new Permission() { Name = permission });
-                }
+                permissions.Add(new Permission() { Name = permission });
             }
 
-            permissions.Add(new Permission() { Name = "Admin" });
             return permissions;
         }
 
@@ -190,17 +197,6 @@ namespace FlatsAPI
             var modules = new List<string>() { "BlockOfFlats", "Flat" };
 
             return permissions;
-        }
-
-        public ICollection<string> GeneratePermissionsForModule(string module)
-        {
-            return new List<string>()
-            {
-                $"{module}.Create",
-                $"{module}.Read",
-                $"{module}.Update",
-                $"{module}.Delete"
-            };
         }
     }
 }
