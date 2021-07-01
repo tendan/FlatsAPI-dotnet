@@ -50,6 +50,21 @@ namespace FlatsAPI.Entities
                 .HasMany(r => r.Permissions)
                 .WithMany(p => p.Roles);
 
+            modelBuilder.Entity<Role>()
+                .HasMany(r => r.Accounts)
+                .WithOne(a => a.Role);
+
+            modelBuilder.Entity<Account>()
+                .HasOne(a => a.Role)
+                .WithMany(r => r.Accounts)
+                .HasForeignKey(a => a.RoleId)
+                .IsRequired();
+
+
+            modelBuilder.Entity<Permission>()
+                .HasMany(p => p.Roles)
+                .WithMany(r => r.Permissions);
+
             base.OnModelCreating(modelBuilder);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
