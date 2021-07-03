@@ -23,6 +23,10 @@ using FlatsAPI.Services;
 using FlatsAPI.Middleware;
 using FlatsAPI.Settings;
 using FlatsAPI.Settings.Permissions;
+using Microsoft.AspNetCore.Authorization;
+using FlatsAPI.Authorization.Policies;
+using FlatsAPI.Authorization;
+using FlatsAPI.Authorization.Handlers;
 
 namespace FlatsAPI
 {
@@ -62,12 +66,16 @@ namespace FlatsAPI
                 };
             });
 
+            // Authorization config
+
+            services.AddTransient<IPermissionContext, PermissionContext>();
             services.AddAuthorization();
+
+            services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
+            services.AddScoped<IAuthorizationHandler, PermissionRequirementHandler>();
 
             services.AddControllers().AddFluentValidation();
             services.AddDbContext<FlatsDbContext>();
-
-            
 
             services.AddAutoMapper(this.GetType().Assembly);
 
@@ -86,7 +94,7 @@ namespace FlatsAPI
             services.AddScoped<IBlockOfFlatsService, BlockOfFlatsService>();
             services.AddScoped<IFlatService, FlatService>();
             services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IPermissionContext, PermissionContext>();
+            
             
             services.AddScoped<FlatsSeeder>();
 
@@ -105,10 +113,14 @@ namespace FlatsAPI
                 app.UseDeveloperExceptionPage();
             }
 
+            //app.UseMiddleware<ErrorHandlingMiddleware>();
+            
+            
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
