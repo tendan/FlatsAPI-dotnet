@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FlatsAPI.Settings;
 using FlatsAPI.Settings.Permissions;
+using System.Reflection;
 
 namespace FlatsAPI
 {
@@ -25,6 +26,19 @@ namespace FlatsAPI
         {
             if (_dbContext.Database.CanConnect())
             {
+                /*if (_dbContext.Roles.Any())
+                {*/
+                /*_dbContext.Roles.RemoveRange(_dbContext.Roles.ToList());
+                _dbContext.Accounts.RemoveRange(_dbContext.Accounts.ToList());
+                _dbContext.Permissions.RemoveRange(_dbContext.Permissions.ToList());
+                _dbContext.SaveChanges();*/
+                /*}*/
+                if (!_dbContext.Permissions.Any())
+                {
+                    var permissions = GetPermissions();
+                    _dbContext.Permissions.AddRange(permissions);
+                    _dbContext.SaveChanges();
+                }
                 if (!_dbContext.Roles.Any())
                 {
                     var roles = GetRoles();
@@ -49,17 +63,7 @@ namespace FlatsAPI
                     _dbContext.Flats.AddRange(flats);
                     _dbContext.SaveChanges();
                 }
-                if (_dbContext.Permissions.Any())
-                {
-                    _dbContext.Permissions.RemoveRange(_dbContext.Permissions.ToList());
-                    _dbContext.SaveChanges();
-                }
-                if (!_dbContext.Permissions.Any())
-                {
-                    var permissions = GetPermissions();
-                    _dbContext.Permissions.AddRange(permissions);
-                    _dbContext.SaveChanges();
-                }
+                
             }
         }
 
@@ -161,15 +165,18 @@ namespace FlatsAPI
             {
                 new Role()
                 {
-                    Name = "Tenant"
+                    Name = "Tenant",
+                    Permissions = GetTenantPermissions()
                 },
                 new Role()
                 {
-                    Name = "Landlord"
+                    Name = "Landlord",
+                    Permissions = GetLandlordPermissions()
                 },
                 new Role()
                 {
-                    Name = "Admin"
+                    Name = "Admin",
+                    Permissions = GetAdminPermissions()
                 }
             };
             return roles;
@@ -192,9 +199,37 @@ namespace FlatsAPI
 
         private ICollection<Permission> GetTenantPermissions()
         {
-            var permissions = new List<Permission>();
+            var permissions = new List<Permission>() 
+            { 
+                _permissionContext.GetPermissionFromDb(BlockOfFlatsPermissions.Read),
+                _permissionContext.GetPermissionFromDb(FlatPermissions.Read),
+            };
 
-            var modules = new List<string>() { "BlockOfFlats", "Flat" };
+            
+
+            return permissions;
+        }
+
+        private ICollection<Permission> GetAdminPermissions()
+        {
+            var permissions = _permissionContext.GetAllPermissionsFromDb();
+
+            return permissions;
+        }
+
+        private ICollection<Permission> GetLandlordPermissions()
+        {
+            FieldInfo[] blockOfFlatsPermissionsProperties = typeof(BlockOfFlatsPermissions).GetFields();
+            FieldInfo[] flatPermissionsProperties = typeof(FlatPermissions).GetFields();
+
+            var permissions = new List<Permission>();
+            var fields = new List<FieldInfo>();
+
+            fields.AddRange(blockOfFlatsPermissionsProperties);
+            fields.AddRange(flatPermissionsProperties);
+
+            foreach (var field in fields)
+                permissions.Add(new Permission() { Name = field.GetValue(null).ToString() });
 
             return permissions;
         }
