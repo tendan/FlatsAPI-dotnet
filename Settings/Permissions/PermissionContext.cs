@@ -1,4 +1,6 @@
-﻿using System;
+﻿using FlatsAPI.Entities;
+using FlatsAPI.Exceptions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -9,10 +11,18 @@ namespace FlatsAPI.Settings.Permissions
     public interface IPermissionContext
     {
         ICollection<string> GeneratePermissionsForModule(string module);
+        Permission GetPermissionFromDb(string permissionName);
+        ICollection<Permission> GetAllPermissionsFromDb();
         ICollection<string> GetAllModulesPermissions();
     }
     public class PermissionContext : IPermissionContext
     {
+        private readonly FlatsDbContext _dbContext;
+
+        public PermissionContext(FlatsDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
         public ICollection<string> GeneratePermissionsForModule(string module)
         {
             return new List<string>()
@@ -22,6 +32,21 @@ namespace FlatsAPI.Settings.Permissions
                 $"{module}.Update",
                 $"{module}.Delete"
             };
+        }
+        public Permission GetPermissionFromDb(string permissionName)
+        {
+            var permission = _dbContext.Permissions.FirstOrDefault(p => p.Name == permissionName);
+
+            if (permission is null)
+                throw new NotFoundException("Permission not found");
+
+            return permission;
+        }
+        public ICollection<Permission> GetAllPermissionsFromDb()
+        {
+            var permissions = _dbContext.Permissions.ToList();
+
+            return permissions;
         }
         public ICollection<string> GetAllModulesPermissions()
         {
