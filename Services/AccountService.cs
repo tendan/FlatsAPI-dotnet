@@ -3,6 +3,7 @@ using FlatsAPI.Entities;
 using FlatsAPI.Exceptions;
 using FlatsAPI.Models;
 using FlatsAPI.Settings;
+using FlatsAPI.Settings.Roles;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -67,9 +68,12 @@ namespace FlatsAPI.Services
             if (account is null)
                 throw new NotFoundException("Account not found");
 
-            /**
-             * Need to implement authorization
-             */
+            var accountThatInvokedAction = _dbContext.Accounts.Include(a => a.Role).FirstOrDefault(a => a.Id == _userContextService.GetUserId);
+
+            var isAdmin = accountThatInvokedAction.Role.Name == AdminRole.Name;
+
+            if (_userContextService.GetUserId != id && !isAdmin)
+                throw new UnauthorizedException("You are not permitted to perform this action");
 
             _dbContext.Accounts.Remove(account);
             _dbContext.SaveChanges();
