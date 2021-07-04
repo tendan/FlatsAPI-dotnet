@@ -44,11 +44,8 @@ namespace FlatsAPI.Controllers
         {
             return Ok(_accountService.GetRentsByEmail(query, email));
         }
-        /**
-         * Probably doesn't work temporary
-         */
         [HttpDelete("user/{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize]
         public ActionResult DeleteUserById([FromRoute]int id)
         {
             _accountService.DeleteById(id);

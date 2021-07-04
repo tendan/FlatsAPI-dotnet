@@ -1,5 +1,8 @@
-﻿using FlatsAPI.Models;
+﻿using FlatsAPI.Authorization;
+using FlatsAPI.Models;
 using FlatsAPI.Services;
+using FlatsAPI.Settings.Permissions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -20,7 +23,7 @@ namespace FlatsAPI.Controllers
             _blockOfFlatsService = blockOfFlatsService;
         }
         [HttpPost]
-        // Need to add dto
+        [PermissionAuthorize(BlockOfFlatsPermissions.Create)]
         public ActionResult CreateNewBlock([FromBody]CreateBlockOfFlatsDto createBlockOfFlatsDto)
         {
             var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
@@ -44,6 +47,7 @@ namespace FlatsAPI.Controllers
             return Ok(_blockOfFlatsService.GetAllFlatsById(query, id));
         }
         [HttpDelete("{id}")]
+        [PermissionAuthorize(BlockOfFlatsPermissions.Delete)]
         public ActionResult DeleteBlock([FromRoute]int id)
         {
             _blockOfFlatsService.DeleteById(id);

@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using FlatsAPI.Models;
 using FlatsAPI.Services;
 using System.Security.Claims;
+using FlatsAPI.Authorization;
+using FlatsAPI.Settings.Permissions;
 
 namespace FlatsAPI.Controllers
 {
@@ -21,6 +23,7 @@ namespace FlatsAPI.Controllers
         }
         // need to add dto
         [HttpPost]
+        [PermissionAuthorize(FlatPermissions.Create)]
         public ActionResult AddNewFlat([FromBody]CreateFlatDto createFlatDto)
         {
             var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
@@ -54,12 +57,14 @@ namespace FlatsAPI.Controllers
         }
 
         [HttpPost("{flatId}/apply")]
+        [PermissionAuthorize(FlatPermissions.ApplyTenant)]
         public ActionResult ApplyFlatForTenant([FromRoute]int flatId, [FromQuery]int tenantId, [FromQuery]OwnerShip chosen) 
         {
             return Ok();
         }
 
         [HttpDelete("{id}")]
+        [PermissionAuthorize(FlatPermissions.Delete)]
         public ActionResult RemoveFlat([FromRoute]int id) 
         {
             _flatService.Delete(id);
