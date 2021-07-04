@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using FlatsAPI.Settings;
 using FlatsAPI.Settings.Permissions;
 using System.Reflection;
+using FlatsAPI.Settings.Roles;
 
 namespace FlatsAPI
 {
@@ -165,17 +166,17 @@ namespace FlatsAPI
             {
                 new Role()
                 {
-                    Name = "Tenant",
+                    Name = TenantRole.Name,
                     Permissions = GetTenantPermissions()
                 },
                 new Role()
                 {
-                    Name = "Landlord",
+                    Name = LandlordRole.Name,
                     Permissions = GetLandlordPermissions()
                 },
                 new Role()
                 {
-                    Name = "Admin",
+                    Name = AdminRole.Name,
                     Permissions = GetAdminPermissions()
                 }
             };
@@ -199,37 +200,30 @@ namespace FlatsAPI
 
         private ICollection<Permission> GetTenantPermissions()
         {
-            var permissions = new List<Permission>() 
-            { 
-                _permissionContext.GetPermissionFromDb(BlockOfFlatsPermissions.Read),
-                _permissionContext.GetPermissionFromDb(FlatPermissions.Read),
-            };
+            var permissions = new List<Permission>();
 
-            
+            foreach (var permission in TenantRole.Permissions)
+                permissions.Add(_permissionContext.GetPermissionFromDb(permission));
 
             return permissions;
         }
 
         private ICollection<Permission> GetAdminPermissions()
         {
-            var permissions = _permissionContext.GetAllPermissionsFromDb();
+            var permissions = new List<Permission>();
+
+            foreach (var permission in AdminRole.Permissions)
+                permissions.Add(_permissionContext.GetPermissionFromDb(permission));
 
             return permissions;
         }
 
         private ICollection<Permission> GetLandlordPermissions()
         {
-            FieldInfo[] blockOfFlatsPermissionsProperties = typeof(BlockOfFlatsPermissions).GetFields();
-            FieldInfo[] flatPermissionsProperties = typeof(FlatPermissions).GetFields();
-
             var permissions = new List<Permission>();
-            var fields = new List<FieldInfo>();
 
-            fields.AddRange(blockOfFlatsPermissionsProperties);
-            fields.AddRange(flatPermissionsProperties);
-
-            foreach (var field in fields)
-                permissions.Add(new Permission() { Name = field.GetValue(null).ToString() });
+            foreach (var permission in LandlordRole.Permissions)
+                permissions.Add(_permissionContext.GetPermissionFromDb(permission));
 
             return permissions;
         }
