@@ -25,6 +25,11 @@ namespace FlatsAPI.Middleware
                 context.Response.StatusCode = 400;
                 await context.Response.WriteAsync(badRequestException.Message);
             }
+            catch (UnauthorizedException unauthorizedException)
+            {
+                context.Response.StatusCode = 403;
+                await context.Response.WriteAsync(unauthorizedException.Message);
+            }
             catch (Exception e)
             {
                 context.Response.StatusCode = 500;
