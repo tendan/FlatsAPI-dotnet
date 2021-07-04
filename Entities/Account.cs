@@ -25,7 +25,7 @@ namespace FlatsAPI.Entities
         public DateTime DateOfBirth { get; set; }
 
         [Required]
-        public int RoleId { get; set; } = 0;
+        public int RoleId { get; set; }
         public virtual Role Role { get; set; }
 
         public virtual ICollection<Rent> Rents { get; set; }

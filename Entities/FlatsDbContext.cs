@@ -60,7 +60,6 @@ namespace FlatsAPI.Entities
                 .HasForeignKey(a => a.RoleId)
                 .IsRequired();
 
-
             modelBuilder.Entity<Permission>()
                 .HasMany(p => p.Roles)
                 .WithMany(r => r.Permissions);
