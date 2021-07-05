@@ -27,6 +27,7 @@ using Microsoft.AspNetCore.Authorization;
 using FlatsAPI.Authorization.Policies;
 using FlatsAPI.Authorization;
 using FlatsAPI.Authorization.Handlers;
+using FlatsAPI.Settings.Roles;
 
 namespace FlatsAPI
 {
@@ -74,9 +75,15 @@ namespace FlatsAPI
             services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
             services.AddScoped<IAuthorizationHandler, PermissionRequirementHandler>();
 
+            // Roles
+            services.AddSingleton<IRole, AdminRole>();
+            services.AddSingleton<IRole, LandlordRole>();
+            services.AddSingleton<IRole, TenantRole>();
+
             services.AddControllers().AddFluentValidation();
             services.AddDbContext<FlatsDbContext>();
-
+            
+            // Automapper
             services.AddAutoMapper(this.GetType().Assembly);
 
             // Middlewares
