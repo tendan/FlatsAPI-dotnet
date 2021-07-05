@@ -1,6 +1,6 @@
 ﻿namespace FlatsAPI.Settings.Permissions
 {
-    public static class AccountPermissions
+    public class AccountPermissions : IPermissions
     {
         public const string Create = "Account.Create";
         public const string Read = "Account.Read";
