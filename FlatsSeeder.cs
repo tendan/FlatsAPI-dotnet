@@ -64,7 +64,6 @@ namespace FlatsAPI
                     _dbContext.Flats.AddRange(flats);
                     _dbContext.SaveChanges();
                 }
-                
             }
         }
 

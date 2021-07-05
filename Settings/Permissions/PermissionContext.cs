@@ -51,15 +51,21 @@ namespace FlatsAPI.Settings.Permissions
         public ICollection<string> GetAllModulesPermissions()
         {
             var permissions = new List<string>();
-            FieldInfo[] accountPermissionsProperties = typeof(AccountPermissions).GetFields();
-            FieldInfo[] blockOfFlatsPermissionsProperties = typeof(BlockOfFlatsPermissions).GetFields();
-            FieldInfo[] flatPermissionsProperties = typeof(FlatPermissions).GetFields();
+
+            var permissionsFields = new List<IPermissions>()
+            {
+                new AccountPermissions(),
+                new BlockOfFlatsPermissions(),
+                new FlatPermissions()
+            };
 
             var fields = new List<FieldInfo>();
 
-            fields.AddRange(accountPermissionsProperties);
-            fields.AddRange(blockOfFlatsPermissionsProperties);
-            fields.AddRange(flatPermissionsProperties);
+            foreach (var type in permissionsFields)
+            {
+                var properties = type.GetType().GetFields();
+                fields.AddRange(properties);
+            }
 
             foreach (var property in fields)
             {
