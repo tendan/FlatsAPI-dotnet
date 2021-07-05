@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace FlatsAPI.Settings.Permissions
 {
-    interface IPermissions
+    public interface IPermissions
     {
     }
 }
