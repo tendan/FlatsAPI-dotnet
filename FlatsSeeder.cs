@@ -77,7 +77,7 @@ namespace FlatsAPI
                     Username = "tomasz.dran",
                     FirstName = "Tomasz",
                     LastName = "Drań",
-                    RoleId = 2,
+                    Role = _dbContext.Roles.FirstOrDefault(r => r.Name == LandlordRole.Name)
                 },
                 new Account()
                 {
@@ -85,7 +85,7 @@ namespace FlatsAPI
                     Username = "h.skakanka",
                     FirstName = "Hania",
                     LastName = "Brzęczyszczykiewicz",
-                    RoleId = 1,
+                    Role = _dbContext.Roles.FirstOrDefault(r => r.Name == TenantRole.Name)
                 },
                 new Account()
                 {
@@ -93,7 +93,7 @@ namespace FlatsAPI
                     Username = "admin",
                     FirstName = "Franek",
                     LastName = "Administrator",
-                    RoleId = 3
+                    Role = _dbContext.Roles.FirstOrDefault(r => r.Name == AdminRole.Name)
                 }
             };
             accounts.ForEach((a) => a.Password = _passwordHasher.HashPassword(a, "test12345"));
