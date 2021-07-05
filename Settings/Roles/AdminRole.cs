@@ -1,4 +1,5 @@
 ﻿using FlatsAPI.Settings.Permissions;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,18 +10,24 @@ namespace FlatsAPI.Settings.Roles
 {
     public class AdminRole : IRole
     {
-        private static ICollection<string> _permissions;
-        AdminRole()
+        private static ICollection<string> _permissions = new List<string>();
+
+        static AdminRole()
         {
-            FieldInfo[] accountPermissionsProperties = typeof(AccountPermissions).GetFields();
-            FieldInfo[] blockOfFlatsPermissionsProperties = typeof(BlockOfFlatsPermissions).GetFields();
-            FieldInfo[] flatPermissionsProperties = typeof(FlatPermissions).GetFields();
+            var permissionsFields = new List<IPermissions>()
+            {
+                new AccountPermissions(),
+                new BlockOfFlatsPermissions(),
+                new FlatPermissions()
+            };
 
             var fields = new List<FieldInfo>();
 
-            fields.AddRange(accountPermissionsProperties);
-            fields.AddRange(blockOfFlatsPermissionsProperties);
-            fields.AddRange(flatPermissionsProperties);
+            foreach (var type in permissionsFields)
+            {
+                var properties = type.GetType().GetFields();
+                fields.AddRange(properties);
+            }
 
             foreach (var property in fields)
             {
