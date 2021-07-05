@@ -1,12 +1,13 @@
 ﻿using FlatsAPI.Entities;
 using FlatsAPI.Exceptions;
+using FlatsAPI.Settings.Permissions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace FlatsAPI.Settings.Permissions
+namespace FlatsAPI.Services
 {
     public interface IPermissionContext
     {
