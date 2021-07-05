@@ -31,7 +31,8 @@ namespace FlatsAPI.Settings.Roles
 
             foreach (var property in fields)
             {
-                _permissions.Add(property.GetValue(null).ToString());
+                var permissionContext = scope.ServiceProvider.GetService<IPermissionContext>();
+                _permissions = permissionContext.GetAllModulesPermissions();
             }
         }
         public static string Name { get; } = "Admin";
