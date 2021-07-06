@@ -21,7 +21,6 @@ namespace FlatsAPI.Authorization.Policies
         public Task<AuthorizationPolicy> GetDefaultPolicyAsync() => FallbackPolicyProvider.GetDefaultPolicyAsync();
         public Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
         {
-            Console.WriteLine("Initiated policy");
             var policy = policyName.Split(":").FirstOrDefault();
 
             var attributeValue = policyName.Split(":").LastOrDefault();

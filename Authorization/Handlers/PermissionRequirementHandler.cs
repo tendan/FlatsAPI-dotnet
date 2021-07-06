@@ -20,9 +20,7 @@ namespace FlatsAPI.Authorization.Handlers
         }
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
-            Console.WriteLine("Initiated permission authorization");
-
-            if (context.User == null)
+            if (!context.User.HasClaim(c => c.Type == ClaimTypes.NameIdentifier))
                 return Task.CompletedTask;
 
             var accountId = int.Parse(context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
