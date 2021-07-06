@@ -1,6 +1,7 @@
 ﻿using FlatsAPI.Entities;
 using FlatsAPI.Exceptions;
 using FlatsAPI.Settings.Permissions;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,6 +16,9 @@ namespace FlatsAPI.Services
         Permission GetPermissionFromDb(string permissionName);
         ICollection<Permission> GetAllPermissionsFromDb();
         ICollection<string> GetAllModulesPermissions();
+        ICollection<Permission> GetAllAccountPermissionsById(int accountId);
+        Role GetAccountRoleById(int accountId);
+        bool IsPermittedToPerformAction(string permission, int accountId);
     }
     public class PermissionContext : IPermissionContext
     {
@@ -74,6 +78,27 @@ namespace FlatsAPI.Services
             }
 
             return permissions;
+        }
+
+        public ICollection<Permission> GetAllAccountPermissionsById(int accountId)
+        {
+            var account = _dbContext.Accounts.Include(a => a.Role).FirstOrDefault(a => a.Id == accountId);
+
+            return account.Role.Permissions;
+        }
+
+        public Role GetAccountRoleById(int accountId)
+        {
+            var account = _dbContext.Accounts.Include(a => a.Role).FirstOrDefault(a => a.Id == accountId);
+
+            return account.Role;
+        }
+
+        public bool IsPermittedToPerformAction(string permission, int accountId)
+        {
+            var permissions = GetAllAccountPermissionsById(accountId);
+
+            return permissions.FirstOrDefault(p => p.Name == permission) is not null;
         }
     }
 }
