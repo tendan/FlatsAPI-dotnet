@@ -48,16 +48,24 @@ namespace FlatsAPI.Services
         {
             var flat = _mapper.Map<Flat>(dto);
 
-            /**
-             * Needs to be replaced with specified permission
-             */
+            var blockOfFlats = _dbContext.BlockOfFlats.FirstOrDefault(b => b.Id == dto.BlockOfFlatsId);
 
-            var accountThatInvokedAction = _dbContext.Accounts.Include(a => a.Role).FirstOrDefault(a => a.Id == _userContextService.GetUserId);
+            if (blockOfFlats is null)
+                throw new NotFoundException("Block of flats not found");
 
-            var isAdmin = accountThatInvokedAction.Role.Name == AdminRole.Name;
+            var userId = (int)_userContextService.GetUserId;
 
-            if (!isAdmin)
-                flat.OwnerId = _userContextService.GetUserId;
+            var isAllowedToAddNewFlatToSpecifiedBlock = _permissionContext.IsPermittedToPerformAction(BlockOfFlatsPermissions.UpdateOthers, userId);
+
+            if (blockOfFlats.OwnerId != userId && !isAllowedToAddNewFlatToSpecifiedBlock)
+                throw new UnauthorizedException("You are not permitted to perform this action");
+
+            var isObligatedToCreateAnonymously = _permissionContext.IsPermittedToPerformAction(FlatPermissions.CreateAnonymously, userId);
+
+            if (isObligatedToCreateAnonymously)
+                flat.Owner = _dbContext.Accounts.FirstOrDefault(a => a.Id == dto.OwnerId) ?? null;
+            else
+                flat.Owner = _dbContext.Accounts.FirstOrDefault(a => a.Id == userId);
 
             _dbContext.Flats.Add(flat);
             _dbContext.SaveChanges();
