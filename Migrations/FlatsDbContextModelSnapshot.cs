@@ -160,7 +160,7 @@ namespace FlatsAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("permissions");
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("FlatsAPI.Entities.Rent", b =>
@@ -262,7 +262,7 @@ namespace FlatsAPI.Migrations
             modelBuilder.Entity("FlatsAPI.Entities.BlockOfFlats", b =>
                 {
                     b.HasOne("FlatsAPI.Entities.Account", "Owner")
-                        .WithMany()
+                        .WithMany("BlocksOfFlats")
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("Owner");
@@ -277,7 +277,7 @@ namespace FlatsAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("FlatsAPI.Entities.Account", "Owner")
-                        .WithMany()
+                        .WithMany("Flats")
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("BlockOfFlats");
@@ -294,7 +294,7 @@ namespace FlatsAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("FlatsAPI.Entities.Account", "Owner")
-                        .WithMany("OwnerShips")
+                        .WithMany("OwnedRents")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -321,7 +321,11 @@ namespace FlatsAPI.Migrations
 
             modelBuilder.Entity("FlatsAPI.Entities.Account", b =>
                 {
-                    b.Navigation("OwnerShips");
+                    b.Navigation("BlocksOfFlats");
+
+                    b.Navigation("Flats");
+
+                    b.Navigation("OwnedRents");
                 });
 
             modelBuilder.Entity("FlatsAPI.Entities.BlockOfFlats", b =>

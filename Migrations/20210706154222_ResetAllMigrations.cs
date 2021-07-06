@@ -4,12 +4,12 @@ using MySql.EntityFrameworkCore.Metadata;
 
 namespace FlatsAPI.Migrations
 {
-    public partial class FixAccountRoleRelationship : Migration
+    public partial class ResetAllMigrations : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "permissions",
+                name: "Permissions",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -18,7 +18,7 @@ namespace FlatsAPI.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_permissions", x => x.Id);
+                    table.PrimaryKey("PK_Permissions", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -45,9 +45,9 @@ namespace FlatsAPI.Migrations
                 {
                     table.PrimaryKey("PK_PermissionRole", x => new { x.PermissionsId, x.RolesId });
                     table.ForeignKey(
-                        name: "FK_PermissionRole_permissions_PermissionsId",
+                        name: "FK_PermissionRole_Permissions_PermissionsId",
                         column: x => x.PermissionsId,
-                        principalTable: "permissions",
+                        principalTable: "Permissions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -275,7 +275,7 @@ namespace FlatsAPI.Migrations
                 name: "Rents");
 
             migrationBuilder.DropTable(
-                name: "permissions");
+                name: "Permissions");
 
             migrationBuilder.DropTable(
                 name: "Accounts");

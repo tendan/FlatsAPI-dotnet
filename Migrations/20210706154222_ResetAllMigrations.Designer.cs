@@ -9,8 +9,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FlatsAPI.Migrations
 {
     [DbContext(typeof(FlatsDbContext))]
-    [Migration("20210630195508_AddManyToManyRelationShipForRoleAndPermission")]
-    partial class AddManyToManyRelationShipForRoleAndPermission
+    [Migration("20210706154222_ResetAllMigrations")]
+    partial class ResetAllMigrations
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -162,7 +162,7 @@ namespace FlatsAPI.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("permissions");
+                    b.ToTable("Permissions");
                 });
 
             modelBuilder.Entity("FlatsAPI.Entities.Rent", b =>
@@ -253,7 +253,7 @@ namespace FlatsAPI.Migrations
                         .HasForeignKey("FlatId");
 
                     b.HasOne("FlatsAPI.Entities.Role", "Role")
-                        .WithMany()
+                        .WithMany("Accounts")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -264,7 +264,7 @@ namespace FlatsAPI.Migrations
             modelBuilder.Entity("FlatsAPI.Entities.BlockOfFlats", b =>
                 {
                     b.HasOne("FlatsAPI.Entities.Account", "Owner")
-                        .WithMany()
+                        .WithMany("BlocksOfFlats")
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("Owner");
@@ -279,7 +279,7 @@ namespace FlatsAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("FlatsAPI.Entities.Account", "Owner")
-                        .WithMany()
+                        .WithMany("Flats")
                         .HasForeignKey("OwnerId");
 
                     b.Navigation("BlockOfFlats");
@@ -296,7 +296,7 @@ namespace FlatsAPI.Migrations
                         .IsRequired();
 
                     b.HasOne("FlatsAPI.Entities.Account", "Owner")
-                        .WithMany("OwnerShips")
+                        .WithMany("OwnedRents")
                         .HasForeignKey("OwnerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -323,7 +323,11 @@ namespace FlatsAPI.Migrations
 
             modelBuilder.Entity("FlatsAPI.Entities.Account", b =>
                 {
-                    b.Navigation("OwnerShips");
+                    b.Navigation("BlocksOfFlats");
+
+                    b.Navigation("Flats");
+
+                    b.Navigation("OwnedRents");
                 });
 
             modelBuilder.Entity("FlatsAPI.Entities.BlockOfFlats", b =>
@@ -336,6 +340,11 @@ namespace FlatsAPI.Migrations
                     b.Navigation("Rents");
 
                     b.Navigation("Tenants");
+                });
+
+            modelBuilder.Entity("FlatsAPI.Entities.Role", b =>
+                {
+                    b.Navigation("Accounts");
                 });
 #pragma warning restore 612, 618
         }
