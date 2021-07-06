@@ -12,7 +12,7 @@ namespace FlatsAPI.Models
         public int NumberOfRooms { get; set; }
         public int Floor { get; set; }
         public int BlockOfFlatsId { get; set; }
-        public int OwnerId { get; set; }
+        public int? OwnerId { get; set; }
 
         public float PriceWhenBought { get; set; }
         public float PricePerMeterSquaredWhenRented { get; set; }
