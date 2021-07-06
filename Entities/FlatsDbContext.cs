@@ -29,7 +29,7 @@ namespace FlatsAPI.Entities
 
             modelBuilder.Entity<Rent>()
                 .HasOne(r => r.Owner)
-                .WithMany(o => o.OwnerShips);
+                .WithMany(a => a.OwnedRents);
 
             modelBuilder.Entity<Rent>()
                 .HasOne(r => r.Flat)
@@ -63,6 +63,18 @@ namespace FlatsAPI.Entities
             modelBuilder.Entity<Permission>()
                 .HasMany(p => p.Roles)
                 .WithMany(r => r.Permissions);
+
+            modelBuilder.Entity<Flat>()
+                .HasOne(f => f.Owner)
+                .WithMany(a => a.Flats)
+                .HasForeignKey(f => f.OwnerId)
+                .IsRequired(false);
+
+            modelBuilder.Entity<BlockOfFlats>()
+                .HasOne(b => b.Owner)
+                .WithMany(a => a.BlocksOfFlats)
+                .HasForeignKey(f => f.OwnerId)
+                .IsRequired(false);
 
             base.OnModelCreating(modelBuilder);
         }
