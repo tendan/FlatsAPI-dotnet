@@ -2,6 +2,8 @@
 using FlatsAPI.Entities;
 using FlatsAPI.Exceptions;
 using FlatsAPI.Models;
+using FlatsAPI.Settings.Permissions;
+using FlatsAPI.Settings.Roles;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -24,15 +26,18 @@ namespace FlatsAPI.Services
         private readonly FlatsDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IUserContextService _userContextService;
+        private readonly IPermissionContext _permissionContext;
 
         public FlatService(
             FlatsDbContext dbContext,
             IMapper mapper,
-            IUserContextService userContextService
+            IUserContextService userContextService,
+            IPermissionContext permissionContext
             ) {
             _dbContext = dbContext;
             _mapper = mapper;
             _userContextService = userContextService;
+            _permissionContext = permissionContext;
         }
         public void ApplyTenantByIds(int flatId, int tenantId, OwnerShip ownerShip)
         {
@@ -44,10 +49,15 @@ namespace FlatsAPI.Services
             var flat = _mapper.Map<Flat>(dto);
 
             /**
-             * Need to implement authorization
+             * Needs to be replaced with specified permission
              */
 
-            flat.OwnerId = _userContextService.GetUserId;
+            var accountThatInvokedAction = _dbContext.Accounts.Include(a => a.Role).FirstOrDefault(a => a.Id == _userContextService.GetUserId);
+
+            var isAdmin = accountThatInvokedAction.Role.Name == AdminRole.Name;
+
+            if (!isAdmin)
+                flat.OwnerId = _userContextService.GetUserId;
 
             _dbContext.Flats.Add(flat);
             _dbContext.SaveChanges();
@@ -62,9 +72,12 @@ namespace FlatsAPI.Services
             if (flat is null)
                 throw new NotFoundException("Flat not found");
 
-            /**
-             * Need to implement authorization
-             */
+            var userId = (int)_userContextService.GetUserId;
+
+            var isAllowedToDeleteOthersFlats = _permissionContext.IsPermittedToPerformAction(FlatPermissions.DeleteOthers, userId);
+
+            if (flat.OwnerId != userId && !isAllowedToDeleteOthersFlats)
+                throw new UnauthorizedException("You are not permitted to perform this action");
 
             _dbContext.Flats.Remove(flat);
             _dbContext.SaveChanges();

@@ -8,6 +8,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using FlatsAPI.Settings.Roles;
+using FlatsAPI.Settings.Permissions;
 
 namespace FlatsAPI.Services
 {
@@ -24,25 +26,33 @@ namespace FlatsAPI.Services
         private readonly FlatsDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly IUserContextService _userContextService;
+        private readonly IPermissionContext _permissionContext;
 
         public BlockOfFlatsService(
             FlatsDbContext dbContext,
             IMapper mapper,
-            IUserContextService userContextService
+            IUserContextService userContextService,
+            IPermissionContext permissionContext
             ) {
             _dbContext = dbContext;
             _mapper = mapper;
             _userContextService = userContextService;
+            _permissionContext = permissionContext;
         }
         public int Create(CreateBlockOfFlatsDto dto)
         {
             var blockOfFlats = _mapper.Map<BlockOfFlats>(dto);
 
             /**
-             * Need to implement authorization
+             * Needs to be replaced with specified permission
              */
+            var accountThatInvokedAction = _dbContext.Accounts.Include(a => a.Role).FirstOrDefault(a => a.Id == _userContextService.GetUserId);
 
-            blockOfFlats.OwnerId = _userContextService.GetUserId;
+            var isAdmin = accountThatInvokedAction.Role.Name == AdminRole.Name;
+
+            if (!isAdmin)
+                blockOfFlats.OwnerId = _userContextService.GetUserId;
+
             _dbContext.BlockOfFlats.Add(blockOfFlats);
             _dbContext.SaveChanges();
 
@@ -58,10 +68,12 @@ namespace FlatsAPI.Services
             if (blockOfFlats is null)
                 throw new NotFoundException("Block of flats not found");
 
-            /**
-             * Need to implement authorization
-             */
+            var userId = (int)_userContextService.GetUserId;
 
+            var isAllowedToDeleteOthersBlocks = _permissionContext.IsPermittedToPerformAction(BlockOfFlatsPermissions.DeleteOthers, userId);
+
+            if (blockOfFlats.OwnerId != userId && !isAllowedToDeleteOthersBlocks)
+                throw new UnauthorizedException("You are not permitted to perform this action");
 
             _dbContext.BlockOfFlats.Remove(blockOfFlats);
             _dbContext.SaveChanges();

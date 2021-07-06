@@ -3,6 +3,7 @@ using FlatsAPI.Entities;
 using FlatsAPI.Exceptions;
 using FlatsAPI.Models;
 using FlatsAPI.Settings;
+using FlatsAPI.Settings.Permissions;
 using FlatsAPI.Settings.Roles;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -33,19 +34,22 @@ namespace FlatsAPI.Services
         private readonly IUserContextService _userContextService;
         private readonly IPasswordHasher<Account> _passwordHasher;
         private readonly AuthenticationSettings _authenticationSettings;
+        private readonly IPermissionContext _permissionContext;
 
         public AccountService(
             FlatsDbContext dbContext,
             IMapper mapper,
             IUserContextService userContextService,
             IPasswordHasher<Account> passwordHasher,
-            AuthenticationSettings authenticationSettings
+            AuthenticationSettings authenticationSettings,
+            IPermissionContext permissionContext
             ) {
             _dbContext = dbContext;
             _mapper = mapper;
             _userContextService = userContextService;
             _passwordHasher = passwordHasher;
             _authenticationSettings = authenticationSettings;
+            _permissionContext = permissionContext;
         }
 
         public int Create(CreateAccountDto dto)
@@ -68,11 +72,11 @@ namespace FlatsAPI.Services
             if (account is null)
                 throw new NotFoundException("Account not found");
 
-            var accountThatInvokedAction = _dbContext.Accounts.Include(a => a.Role).FirstOrDefault(a => a.Id == _userContextService.GetUserId);
+            var userId = (int)_userContextService.GetUserId;
 
-            var isAdmin = accountThatInvokedAction.Role.Name == AdminRole.Name;
+            var isAllowedToDeleteOthersAccounts = _permissionContext.IsPermittedToPerformAction(AccountPermissions.DeleteOthers, userId);
 
-            if (_userContextService.GetUserId != id && !isAdmin)
+            if (id != userId && !isAllowedToDeleteOthersAccounts)
                 throw new UnauthorizedException("You are not permitted to perform this action");
 
             _dbContext.Accounts.Remove(account);
