@@ -3,6 +3,7 @@
     public class FlatPermissions : IPermissions
     {
         public const string Create = "Flat.Create";
+        public const string CreateAnonymously = "Flat.Create.Anonymously";
         public const string Read = "Flat.Read";
         public const string Update = "Flat.Update";
         public const string UpdateOthers = "Flat.Update.Others";
