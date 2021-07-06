@@ -27,9 +27,9 @@ namespace FlatsAPI.Controllers
         public ActionResult AddNewFlat([FromBody]CreateFlatDto createFlatDto)
         {
             var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
-            var blockOfFlatsId = _flatService.Create(createFlatDto);
+            var flatId = _flatService.Create(createFlatDto);
 
-            return Created($"/api/blocks/{userId}", null);
+            return Created($"/api/blocks/{flatId}", null);
         }
 
         [HttpGet]
