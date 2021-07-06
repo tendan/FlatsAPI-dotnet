@@ -43,15 +43,12 @@ namespace FlatsAPI.Services
         {
             var blockOfFlats = _mapper.Map<BlockOfFlats>(dto);
 
-            /**
-             * Needs to be replaced with specified permission
-             */
-            var accountThatInvokedAction = _dbContext.Accounts.Include(a => a.Role).FirstOrDefault(a => a.Id == _userContextService.GetUserId);
+            var userId = (int)_userContextService.GetUserId;
 
-            var isAdmin = accountThatInvokedAction.Role.Name == AdminRole.Name;
+            var isObligatedToCreateAnonymously = _permissionContext.IsPermittedToPerformAction(BlockOfFlatsPermissions.CreateAnonymously, userId);
 
-            if (!isAdmin)
-                blockOfFlats.OwnerId = _userContextService.GetUserId;
+            if (!isObligatedToCreateAnonymously)
+                blockOfFlats.OwnerId = userId;
 
             _dbContext.BlockOfFlats.Add(blockOfFlats);
             _dbContext.SaveChanges();
