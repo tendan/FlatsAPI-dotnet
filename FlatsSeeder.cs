@@ -4,10 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using FlatsAPI.Settings;
-using FlatsAPI.Settings.Permissions;
 using System.Reflection;
 using FlatsAPI.Settings.Roles;
+using FlatsAPI.Services;
 
 namespace FlatsAPI
 {
