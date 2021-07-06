@@ -19,7 +19,8 @@ namespace FlatsAPI.Settings.Roles
             FlatPermissions.Create,
             FlatPermissions.Read,
             FlatPermissions.Update,
-            FlatPermissions.Delete
+            FlatPermissions.Delete,
+            FlatPermissions.ApplyTenant
         };
     }
 }
