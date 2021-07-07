@@ -29,8 +29,6 @@ namespace FlatsAPI.Entities
         
         public virtual ICollection<Account> Tenants { get; set; }
 
-        public OwnerShip? OwnerShip { get; set; }
-
         [Required]
         public float PriceWhenBought { get; set; }
         public float? PricePerMeterSquaredWhenRented { get; set; }
