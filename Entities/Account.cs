@@ -30,7 +30,7 @@ namespace FlatsAPI.Entities
 
         public virtual ICollection<Rent> Rents { get; set; }
         public virtual ICollection<Rent> OwnedRents { get; set; }
-        public virtual ICollection<Flat> Flats { get; set; }
-        public virtual ICollection<BlockOfFlats> BlocksOfFlats { get; set; }
+        public virtual ICollection<Flat> OwnedFlats { get; set; }
+        public virtual ICollection<BlockOfFlats> OwnedBlocksOfFlats { get; set; }
     }
 }

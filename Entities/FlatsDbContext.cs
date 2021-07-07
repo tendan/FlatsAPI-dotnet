@@ -66,13 +66,13 @@ namespace FlatsAPI.Entities
 
             modelBuilder.Entity<Flat>()
                 .HasOne(f => f.Owner)
-                .WithMany(a => a.Flats)
+                .WithMany(a => a.OwnedFlats)
                 .HasForeignKey(f => f.OwnerId)
                 .IsRequired(false);
 
             modelBuilder.Entity<BlockOfFlats>()
                 .HasOne(b => b.Owner)
-                .WithMany(a => a.BlocksOfFlats)
+                .WithMany(a => a.OwnedBlocksOfFlats)
                 .HasForeignKey(f => f.OwnerId)
                 .IsRequired(false);
 
