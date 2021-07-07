@@ -67,6 +67,8 @@ namespace FlatsAPI.Services
             else
                 flat.Owner = _dbContext.Accounts.FirstOrDefault(a => a.Id == userId);
 
+            flat.PricePerMeterSquaredWhenRented = dto.PricePerMeterSquaredWhenRented ?? null;
+
             _dbContext.Flats.Add(flat);
             _dbContext.SaveChanges();
 
