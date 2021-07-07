@@ -15,6 +15,6 @@ namespace FlatsAPI.Models
         public int? OwnerId { get; set; }
 
         public float PriceWhenBought { get; set; }
-        public float PricePerMeterSquaredWhenRented { get; set; }
+        public float? PricePerMeterSquaredWhenRented { get; set; }
     }
 }
