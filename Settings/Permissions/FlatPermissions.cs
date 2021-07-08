@@ -10,5 +10,6 @@
         public const string Delete = "Flat.Delete";
         public const string DeleteOthers = "Flat.Delete.Others";
         public const string ApplyTenant = "Flat.ApplyTenant";
+        public const string ApplyTenantOthers = "Flat.ApplyTenant.Others";
     }
 }
