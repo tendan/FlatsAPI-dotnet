@@ -18,7 +18,7 @@ namespace FlatsAPI.Services
         PagedResult<FlatDto> GetAll(SearchQuery query);
         FlatDto GetById(int id);
         PagedResult<RentDto> GetRentsById(SearchQuery query, int id);
-        void ApplyTenantByIds(int flatId, int tenantId, OwnerShip ownerShip);
+        void ApplyTenantByIds(int flatId, int tenantId);
         void Delete(int id);
     }
     public class FlatService : IFlatService
@@ -39,9 +39,28 @@ namespace FlatsAPI.Services
             _userContextService = userContextService;
             _permissionContext = permissionContext;
         }
-        public void ApplyTenantByIds(int flatId, int tenantId, OwnerShip ownerShip)
+        public void ApplyTenantByIds(int flatId, int tenantId)
         {
-            throw new NotImplementedException();
+            var flat = _dbContext.Flats.FirstOrDefault(f => f.Id == flatId);
+
+            if (flat is null)
+                throw new NotFoundException("Flat not found");
+
+            var potentialTenant = _dbContext.Accounts.FirstOrDefault(a => a.Id == tenantId);
+
+            if (potentialTenant is null)
+                throw new NotFoundException("Account not found");
+
+            var userId = (int)_userContextService.GetUserId;
+
+            var isAllowedToAddTenantWithoutOwnership = _permissionContext.IsPermittedToPerformAction(FlatPermissions.ApplyTenantOthers, userId);
+
+            if (flat.OwnerId != userId && !isAllowedToAddTenantWithoutOwnership)
+                throw new UnauthorizedException("You are not permitted to perform this action");
+
+            flat.Tenants.Add(potentialTenant);
+            _dbContext.Flats.Update(flat);
+            _dbContext.SaveChanges();
         }
 
         public int Create(CreateFlatDto dto)
