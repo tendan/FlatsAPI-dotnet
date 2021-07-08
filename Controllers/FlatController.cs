@@ -29,7 +29,7 @@ namespace FlatsAPI.Controllers
             var userId = int.Parse(User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
             var flatId = _flatService.Create(createFlatDto);
 
-            return Created($"/api/blocks/{flatId}", null);
+            return Created($"/api/flats/{flatId}", null);
         }
 
         [HttpGet]
@@ -58,9 +58,10 @@ namespace FlatsAPI.Controllers
 
         [HttpPost("{flatId}/apply")]
         [PermissionAuthorize(FlatPermissions.ApplyTenant)]
-        public ActionResult ApplyFlatForTenant([FromRoute]int flatId, [FromQuery]int tenantId, [FromQuery]OwnerShip chosen) 
+        public ActionResult ApplyFlatForTenant([FromRoute]int flatId, [FromQuery]int tenantId) 
         {
-            return Ok();
+            _flatService.ApplyTenantByIds(flatId, tenantId);
+            return Created($"/api/flats/{flatId}", null);
         }
 
         [HttpDelete("{id}")]
