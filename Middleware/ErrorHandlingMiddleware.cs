@@ -54,14 +54,20 @@ namespace FlatsAPI.Middleware
                         break;   
                 }
 
+                var jsonSerializerOptions = new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+
                 var result = JsonSerializer.Serialize(new 
                 { 
-                    timeStamp = DateTime.Now.ToString(),
-                    statusCode = response.StatusCode,
-                    method = context.Request.Method,
-                    path = (string)context.Request.Path,
-                    message = error?.Message
-                }
+                    TimeStamp = DateTime.Now.ToString(),
+                    StatusCode = response.StatusCode,
+                    Method = context.Request.Method,
+                    Path = (string)context.Request.Path,
+                    Message = error?.Message
+                },
+                jsonSerializerOptions
                 );
 
                 await response.WriteAsync(result);
