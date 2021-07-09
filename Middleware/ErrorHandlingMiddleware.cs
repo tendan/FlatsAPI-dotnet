@@ -4,11 +4,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FlatsAPI.Exceptions;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FlatsAPI.Middleware
 {
     public class ErrorHandlingMiddleware : IMiddleware
     {
+        private readonly IWebHostEnvironment _env;
+
+        public ErrorHandlingMiddleware(IWebHostEnvironment env)
+        {
+            _env = env;
+        }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
@@ -33,7 +40,7 @@ namespace FlatsAPI.Middleware
             catch (Exception e)
             {
                 context.Response.StatusCode = 500;
-                await context.Response.WriteAsync("Something went wrong");
+                await context.Response.WriteAsync(e.ToString());
             }
         }
     }

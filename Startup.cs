@@ -28,6 +28,7 @@ using FlatsAPI.Authorization.Policies;
 using FlatsAPI.Authorization;
 using FlatsAPI.Authorization.Handlers;
 using FlatsAPI.Settings.Roles;
+using FlatsAPI.Services.Scheduled;
 
 namespace FlatsAPI
 {
@@ -101,8 +102,11 @@ namespace FlatsAPI
             services.AddScoped<IBlockOfFlatsService, BlockOfFlatsService>();
             services.AddScoped<IFlatService, FlatService>();
             services.AddScoped<IAccountService, AccountService>();
+
+            // Hosted services
+            services.AddHostedService<RentService>();
             
-            
+            // Helpers
             services.AddScoped<FlatsSeeder>();
 
             services.AddHttpContextAccessor();
@@ -120,7 +124,7 @@ namespace FlatsAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            //app.UseMiddleware<ErrorHandlingMiddleware>();
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             
             
             app.UseHttpsRedirection();
