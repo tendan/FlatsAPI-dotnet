@@ -5,24 +5,20 @@ using System.Linq;
 using System.Threading.Tasks;
 using FlatsAPI.Exceptions;
 using Microsoft.AspNetCore.Hosting;
+using System.Net;
+using System.Text.Json;
 
 namespace FlatsAPI.Middleware
 {
     public class ErrorHandlingMiddleware : IMiddleware
     {
-        private readonly IWebHostEnvironment _env;
-
-        public ErrorHandlingMiddleware(IWebHostEnvironment env)
-        {
-            _env = env;
-        }
         public async Task InvokeAsync(HttpContext context, RequestDelegate next)
         {
             try
             {
                 await next.Invoke(context);
             }
-            catch (NotFoundException notFoundException)
+            /*catch (NotFoundException notFoundException)
             {
                 context.Response.StatusCode = 404;
                 await context.Response.WriteAsync(notFoundException.Message);
@@ -36,11 +32,39 @@ namespace FlatsAPI.Middleware
             {
                 context.Response.StatusCode = 403;
                 await context.Response.WriteAsync(unauthorizedException.Message);
-            }
-            catch (Exception e)
+            }*/
+            catch (Exception error)
             {
-                context.Response.StatusCode = 500;
-                await context.Response.WriteAsync(e.ToString());
+                var response = context.Response;
+                response.ContentType = "application/json";
+
+                switch (error)
+                {
+                    case NotFoundException:
+                        response.StatusCode = (int)HttpStatusCode.NotFound;
+                        break;
+                    case BadRequestException:
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        break;
+                    case ForbiddenException:
+                        response.StatusCode = (int)HttpStatusCode.Forbidden;
+                        break;
+                    default:
+                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                        break;   
+                }
+
+                var result = JsonSerializer.Serialize(new 
+                { 
+                    timeStamp = DateTime.Now.ToString(),
+                    statusCode = response.StatusCode,
+                    method = context.Request.Method,
+                    path = (string)context.Request.Path,
+                    message = error?.Message
+                }
+                );
+
+                await response.WriteAsync(result);
             }
         }
     }
