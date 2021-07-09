@@ -77,7 +77,7 @@ namespace FlatsAPI.Services
             var isAllowedToDeleteOthersAccounts = _permissionContext.IsPermittedToPerformAction(AccountPermissions.DeleteOthers, userId);
 
             if (id != userId && !isAllowedToDeleteOthersAccounts)
-                throw new UnauthorizedException("You are not permitted to perform this action");
+                throw new ForbiddenException("You are not permitted to perform this action");
 
             _dbContext.Accounts.Remove(account);
             _dbContext.SaveChanges();

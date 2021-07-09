@@ -56,7 +56,7 @@ namespace FlatsAPI.Services
             var isAllowedToAddTenantWithoutOwnership = _permissionContext.IsPermittedToPerformAction(FlatPermissions.ApplyTenantOthers, userId);
 
             if (flat.OwnerId != userId && !isAllowedToAddTenantWithoutOwnership)
-                throw new UnauthorizedException("You are not permitted to perform this action");
+                throw new ForbiddenException("You are not permitted to perform this action");
 
             flat.Tenants.Add(potentialTenant);
             _dbContext.Flats.Update(flat);
@@ -77,7 +77,7 @@ namespace FlatsAPI.Services
             var isAllowedToAddNewFlatToSpecifiedBlock = _permissionContext.IsPermittedToPerformAction(BlockOfFlatsPermissions.UpdateOthers, userId);
 
             if (blockOfFlats.OwnerId != userId && !isAllowedToAddNewFlatToSpecifiedBlock)
-                throw new UnauthorizedException("You are not permitted to perform this action");
+                throw new ForbiddenException("You are not permitted to perform this action");
 
             var isObligatedToCreateAnonymously = _permissionContext.IsPermittedToPerformAction(FlatPermissions.CreateAnonymously, userId);
 
@@ -106,7 +106,7 @@ namespace FlatsAPI.Services
             var isAllowedToDeleteOthersFlats = _permissionContext.IsPermittedToPerformAction(FlatPermissions.DeleteOthers, userId);
 
             if (flat.OwnerId != userId && !isAllowedToDeleteOthersFlats)
-                throw new UnauthorizedException("You are not permitted to perform this action");
+                throw new ForbiddenException("You are not permitted to perform this action");
 
             _dbContext.Flats.Remove(flat);
             _dbContext.SaveChanges();

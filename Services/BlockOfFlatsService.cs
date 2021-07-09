@@ -72,7 +72,7 @@ namespace FlatsAPI.Services
             var isAllowedToDeleteOthersBlocks = _permissionContext.IsPermittedToPerformAction(BlockOfFlatsPermissions.DeleteOthers, userId);
 
             if (blockOfFlats.OwnerId != userId && !isAllowedToDeleteOthersBlocks)
-                throw new UnauthorizedException("You are not permitted to perform this action");
+                throw new ForbiddenException("You are not permitted to perform this action");
 
             _dbContext.BlockOfFlats.Remove(blockOfFlats);
             _dbContext.SaveChanges();

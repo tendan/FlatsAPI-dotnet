@@ -23,7 +23,7 @@ namespace FlatsAPI.Authorization.Handlers
         {
             if (!context.User.HasClaim(c => c.Type == ClaimTypes.NameIdentifier))
             {
-                throw new UnauthorizedException("You are not permitted to perform this action");
+                throw new ForbiddenException("You are not permitted to perform this action");
             }
 
             var accountId = int.Parse(context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
@@ -38,7 +38,7 @@ namespace FlatsAPI.Authorization.Handlers
 
             if (!rolePermissions.Any())
             {
-                throw new UnauthorizedException("You are not permitted to perform this action");
+                throw new ForbiddenException("You are not permitted to perform this action");
             }
 
             var requiredPermissionInPermissions = rolePermissions.FirstOrDefault(p => p.Name == requirement.Permission);
