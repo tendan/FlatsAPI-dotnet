@@ -23,7 +23,7 @@ namespace FlatsAPI.Authorization.Handlers
         {
             if (!context.User.HasClaim(c => c.Type == ClaimTypes.NameIdentifier))
             {
-                throw new UnauthorizedException("You are not permitted to perform this action");\
+                throw new UnauthorizedException("You are not permitted to perform this action");
             }
 
             var accountId = int.Parse(context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
