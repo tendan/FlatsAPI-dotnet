@@ -1,4 +1,5 @@
 ﻿using FlatsAPI.Entities;
+using FlatsAPI.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -21,7 +22,9 @@ namespace FlatsAPI.Authorization.Handlers
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, PermissionRequirement requirement)
         {
             if (!context.User.HasClaim(c => c.Type == ClaimTypes.NameIdentifier))
-                return Task.CompletedTask;
+            {
+                throw new UnauthorizedException("You are not permitted to perform this action");\
+            }
 
             var accountId = int.Parse(context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier).Value);
 
@@ -35,7 +38,7 @@ namespace FlatsAPI.Authorization.Handlers
 
             if (!rolePermissions.Any())
             {
-                return Task.CompletedTask;
+                throw new UnauthorizedException("You are not permitted to perform this action");
             }
 
             var requiredPermissionInPermissions = rolePermissions.FirstOrDefault(p => p.Name == requirement.Permission);
