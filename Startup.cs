@@ -104,7 +104,7 @@ namespace FlatsAPI
             services.AddScoped<IAccountService, AccountService>();
 
             // Hosted services
-            services.AddHostedService<RentService>();
+            services.AddHostedService<RentHostedService>();
             
             // Helpers
             services.AddScoped<FlatsSeeder>();

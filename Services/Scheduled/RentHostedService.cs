@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlatsAPI.Services.Scheduled
 {
-    public class RentService : IHostedService
+    public class RentHostedService : IHostedService
     {
         private Timer _timer;
 
