@@ -133,12 +133,12 @@ namespace FlatsAPI.Services
         public PagedResult<RentDto> GetRentsByEmail(SearchQuery query, string email)
         {
             var baseQuery = _dbContext.Rents
-                .Include(r => r.Owner)
-                .Include(r => r.Tenants)
-                .Include(r => r.Flat)
-                .Where(r => (r.Owner.Email == email || r.Tenants.Where(t => t.Email == email).Any()))
-                .Where(r => query.SearchPhrase == null || (r.Owner.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
-                                                           || r.Owner.LastName.ToLower()
+                .Include(r => r.RentIssuer)
+                .Include(r => r.PropertyId)
+                .Include(r => r.Property)
+                .Where(r => (r.RentIssuer.Email == email))
+                .Where(r => query.SearchPhrase == null || (r.RentIssuer.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
+                                                           || r.RentIssuer.LastName.ToLower()
                                                                .Contains(query.SearchPhrase.ToLower())));
 
             if (!string.IsNullOrEmpty(query.SortBy))
@@ -148,8 +148,8 @@ namespace FlatsAPI.Services
                     {nameof(Rent.CreationDate), r => r.CreationDate },
                     {nameof(Rent.PayDate), r => r.PayDate },
                     {nameof(Rent.Paid), r => r.Paid },
-                    {nameof(Rent.Owner.FirstName), r => r.Owner.FirstName },
-                    {nameof(Rent.Owner.LastName), r => r.Owner.LastName },
+                    {nameof(Rent.RentIssuer.FirstName), r => r.RentIssuer.FirstName },
+                    {nameof(Rent.RentIssuer.LastName), r => r.RentIssuer.LastName },
                 };
 
                 var selectedColumn = columnSelectors[query.SortBy];

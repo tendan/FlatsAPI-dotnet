@@ -169,23 +169,24 @@ namespace FlatsAPI.Services
         public PagedResult<RentDto> GetRentsById(SearchQuery query, int id)
         {
             var baseQuery = _dbContext.Rents
-                .Include(r => r.Owner)
-                .Include(r => r.Flat)
-                .Where(r => r.FlatId == id && (query.SearchPhrase == null || (r.Owner.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
-                                                           || r.Owner.LastName.ToLower()
-                                                               .Contains(query.SearchPhrase.ToLower()))
-                                                               || r.Flat.BlockOfFlats.Address.ToLower()
-                                                                    .Contains(query.SearchPhrase.ToLower())));
+                .Include(r => r.RentIssuer)
+                .Include(r => r.PropertyId)
+                .Include(r => r.Property)
+                .Where(r => r.PropertyId == id && r.Property == PropertyTypes.Flat && (query.SearchPhrase == null || (r.RentIssuer.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
+                                                           || r.RentIssuer.LastName.ToLower()
+                                                               .Contains(query.SearchPhrase.ToLower()))));
+
+            var flat = _dbContext.Flats.FirstOrDefault(f => f.Id == id);
 
             if (!string.IsNullOrEmpty(query.SortBy))
             {
                 var columnsSelectors = new ColumnSelector<Rent>()
                 {
-                    { "flatNumber", r => r.Flat.Number },
+                    { "flatNumber", r => flat.Number },
                     { nameof(Rent.CreationDate), r => r.CreationDate },
                     { nameof(Rent.PayDate), r => r.PayDate },
-                    { "ownerFirstName", r => r.Owner.FirstName },
-                    { "ownerlastName", r => r.Owner.LastName },
+                    { "ownerFirstName", r => r.RentIssuer.FirstName },
+                    { "ownerlastName", r => r.RentIssuer.LastName },
                 };
 
                 var selectedColumn = columnsSelectors[query.SortBy];
