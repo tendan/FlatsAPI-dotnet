@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FlatsAPI.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -26,6 +27,9 @@ namespace FlatsAPI.Entities
 
         [Required]
         public float Price { get; set; }
+
+        [Required]
+        public OwnerShip OwnerShip { get; set; }
 
         [Required]
         public float PriceWithTax { get; set; }
