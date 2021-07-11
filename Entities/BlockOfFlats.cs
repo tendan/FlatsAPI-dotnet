@@ -22,6 +22,10 @@ namespace FlatsAPI.Entities
         public int? OwnerId { get; set; }
         public virtual Account Owner { get; set; }
 
+        public float Price { get; set; }
+
         public virtual ICollection<Flat> Flats { get; set; }
+
+        public virtual Rent Rent { get; set; }
     }
 }
