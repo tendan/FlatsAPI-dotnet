@@ -28,8 +28,8 @@ namespace FlatsAPI.Entities
         public int RoleId { get; set; }
         public virtual Role Role { get; set; }
 
-        public virtual ICollection<Rent> Rents { get; set; }
-        public virtual ICollection<Flat> OwnedFlats { get; set; }
-        public virtual ICollection<BlockOfFlats> OwnedBlocksOfFlats { get; set; }
+        public virtual ICollection<Rent> Rents { get; set; } = new List<Rent>();
+        public virtual ICollection<Flat> OwnedFlats { get; set; } = new List<Flat>();
+        public virtual ICollection<BlockOfFlats> OwnedBlocksOfFlats { get; set; } = new List<BlockOfFlats>();
     }
 }

@@ -14,6 +14,6 @@ namespace FlatsAPI.Entities
         [Required]
         public string Name { get; set; }
 
-        public ICollection<Role> Roles { get; set; }
+        public ICollection<Role> Roles { get; set; } = new List<Role>();
     }
 }

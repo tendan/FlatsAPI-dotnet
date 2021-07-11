@@ -24,7 +24,7 @@ namespace FlatsAPI.Entities
 
         public float Price { get; set; }
 
-        public virtual ICollection<Flat> Flats { get; set; }
+        public virtual ICollection<Flat> Flats { get; set; } = new List<Flat>();
 
         public virtual Rent Rent { get; set; }
     }
