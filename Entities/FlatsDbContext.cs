@@ -24,16 +24,8 @@ namespace FlatsAPI.Entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Rent>()
-                .HasMany(r => r.Tenants)
-                .WithMany(a => a.Rents);
-
-            modelBuilder.Entity<Rent>()
-                .HasOne(r => r.Owner)
-                .WithMany(a => a.OwnedRents);
-
-            modelBuilder.Entity<Rent>()
-                .HasOne(r => r.Flat)
-                .WithMany(f => f.Rents)
+                .HasOne(r => r.RentIssuer)
+                .WithMany(a => a.Rents)
                 .IsRequired();
 
             modelBuilder.Entity<BlockOfFlats>()
