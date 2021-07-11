@@ -4,8 +4,15 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
+
+
 namespace FlatsAPI.Entities
-{
+{   
+    public enum PropertyTypes
+    {
+        Flat,
+        BlockOfFlats
+    }
     public class Rent
     {
         public int Id { get; set; }
@@ -23,12 +30,11 @@ namespace FlatsAPI.Entities
         [Required]
         public float PriceWithTax { get; set; }
 
-        public int FlatId { get; set; }
-        public virtual Flat Flat { get; set; }
+        [Required]
+        public int RentIssuerId { get; set; }
+        public virtual Account RentIssuer { get; set; }
 
-        public int OwnerId { get; set; }
-        public virtual Account Owner { get; set; }
-
-        public virtual ICollection<Account> Tenants { get; set; }
+        public int PropertyId { get; set; }
+        public virtual PropertyTypes Property { get; set; }
     }
 }

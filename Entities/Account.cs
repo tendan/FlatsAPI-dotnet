@@ -29,7 +29,6 @@ namespace FlatsAPI.Entities
         public virtual Role Role { get; set; }
 
         public virtual ICollection<Rent> Rents { get; set; }
-        public virtual ICollection<Rent> OwnedRents { get; set; }
         public virtual ICollection<Flat> OwnedFlats { get; set; }
         public virtual ICollection<BlockOfFlats> OwnedBlocksOfFlats { get; set; }
     }
