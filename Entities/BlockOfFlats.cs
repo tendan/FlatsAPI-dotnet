@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FlatsAPI.Entities
 {
@@ -24,8 +25,10 @@ namespace FlatsAPI.Entities
 
         public float Price { get; set; }
 
+        [InverseProperty("BlockOfFlats")]
         public virtual ICollection<Flat> Flats { get; set; } = new List<Flat>();
 
-        public virtual Rent Rent { get; set; }
+        [InverseProperty("BlockOfFlatsProperty")]
+        public virtual ICollection<Rent> Rents { get; set; } = new List<Rent>();
     }
 }

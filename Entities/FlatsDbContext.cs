@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using MySql.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace FlatsAPI.Entities
@@ -17,26 +16,17 @@ namespace FlatsAPI.Entities
         public DbSet<Rent> Rents { get; set; }
         public DbSet<Role> Roles { get; set; }
         public DbSet<Permission> Permissions { get; set; }
+        //public FlatsDbContext() { }
         public FlatsDbContext(IConfiguration configuration)
         {
             Configuration = configuration;
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Rent>()
-                .HasOne(r => r.RentIssuer)
-                .WithMany(a => a.Rents)
-                .IsRequired();
-
+            /*
             modelBuilder.Entity<BlockOfFlats>()
                 .HasMany(b => b.Flats)
                 .WithOne(f => f.BlockOfFlats);
-
-            modelBuilder.Entity<Flat>()
-                .HasOne(f => f.BlockOfFlats)
-                .WithMany(b => b.Flats)
-                .HasForeignKey(f => f.BlockOfFlatsId)
-                .IsRequired();
 
             modelBuilder.Entity<Role>()
                 .HasMany(r => r.Permissions)
@@ -44,35 +34,64 @@ namespace FlatsAPI.Entities
 
             modelBuilder.Entity<Role>()
                 .HasMany(r => r.Accounts)
-                .WithOne(a => a.Role);
+                .WithOne(a => a.Role);*/
 
             modelBuilder.Entity<Account>()
                 .HasOne(a => a.Role)
                 .WithMany(r => r.Accounts)
-                .HasForeignKey(a => a.RoleId)
                 .IsRequired();
+
+            modelBuilder.Entity<Account>()
+                .HasMany(a => a.Rents)
+                .WithOne(r => r.RentIssuer);
+
+            modelBuilder.Entity<Account>()
+                .HasMany(a => a.OwnedFlats)
+                .WithOne(f => f.Owner);
+
+            modelBuilder.Entity<Account>()
+                .HasMany(a => a.OwnedBlocksOfFlats)
+                .WithOne(b => b.Owner);
+
+            modelBuilder.Entity<Account>()
+                .HasMany(a => a.RentedFlats)
+                .WithMany(f => f.Tenants);
+
+            modelBuilder.Entity<Rent>()
+                .HasOne(r => r.RentIssuer)
+                .WithMany(a => a.Rents)
+                .IsRequired();
+
+            modelBuilder.Entity<Rent>()
+                .HasOne(r => r.FlatProperty)
+                .WithMany(p => p.Rents);
+
+            modelBuilder.Entity<Rent>()
+                .HasOne(r => r.BlockOfFlatsProperty)
+                .WithMany(p => p.Rents);
 
             modelBuilder.Entity<Permission>()
                 .HasMany(p => p.Roles)
                 .WithMany(r => r.Permissions);
 
             modelBuilder.Entity<Flat>()
+                .HasOne(f => f.BlockOfFlats)
+                .WithMany(b => b.Flats)
+                .IsRequired();
+
+            modelBuilder.Entity<Flat>()
                 .HasOne(f => f.Owner)
-                .WithMany(a => a.OwnedFlats)
-                .HasForeignKey(f => f.OwnerId)
-                .IsRequired(false);
+                .WithMany(a => a.OwnedFlats);
 
             modelBuilder.Entity<BlockOfFlats>()
-                .HasOne(b => b.Owner)
-                .WithMany(a => a.OwnedBlocksOfFlats)
-                .HasForeignKey(f => f.OwnerId)
-                .IsRequired(false);
+                .HasOne(f => f.Owner)
+                .WithMany(a => a.OwnedBlocksOfFlats);
 
             base.OnModelCreating(modelBuilder);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseMySQL(Configuration["ConnectionStrings:Default"]);
+            optionsBuilder.UseSqlServer(Configuration["ConnectionStrings:Default"]);
         }
     }
 }

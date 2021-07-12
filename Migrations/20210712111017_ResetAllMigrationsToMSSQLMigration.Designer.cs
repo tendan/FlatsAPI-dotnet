@@ -3,75 +3,80 @@ using System;
 using FlatsAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace FlatsAPI.Migrations
 {
     [DbContext(typeof(FlatsDbContext))]
-    [Migration("20210711094309_ReplaceFlatFieldWithPropertyField")]
-    partial class ReplaceFlatFieldWithPropertyField
+    [Migration("20210712111017_ResetAllMigrationsToMSSQLMigration")]
+    partial class ResetAllMigrationsToMSSQLMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 64)
-                .HasAnnotation("ProductVersion", "5.0.7");
+                .HasAnnotation("Relational:MaxIdentifierLength", 128)
+                .HasAnnotation("ProductVersion", "5.0.7")
+                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("AccountRent", b =>
+            modelBuilder.Entity("AccountFlat", b =>
                 {
-                    b.Property<int>("RentsId")
+                    b.Property<int>("RentedFlatsId")
                         .HasColumnType("int");
 
                     b.Property<int>("TenantsId")
                         .HasColumnType("int");
 
-                    b.HasKey("RentsId", "TenantsId");
+                    b.HasKey("RentedFlatsId", "TenantsId");
 
                     b.HasIndex("TenantsId");
 
-                    b.ToTable("AccountRent");
+                    b.ToTable("AccountFlat");
                 });
 
             modelBuilder.Entity("FlatsAPI.Entities.Account", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2")
+                        .HasColumnName("DateOfBirth");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Email");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int?>("FlatId")
-                        .HasColumnType("int");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("FirstName");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("LastName");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Password");
 
                     b.Property<int>("RoleId")
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasColumnName("RoleId");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Username");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FlatId");
 
                     b.HasIndex("RoleId");
 
@@ -82,33 +87,32 @@ namespace FlatsAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Floors")
                         .HasColumnType("int");
 
                     b.Property<float>("Margin")
-                        .HasColumnType("float");
+                        .HasColumnType("real");
 
                     b.Property<int?>("OwnerId")
                         .HasColumnType("int");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("RentId")
-                        .HasColumnType("int");
+                    b.Property<float>("Price")
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
-
-                    b.HasIndex("RentId");
 
                     b.ToTable("BlockOfFlats");
                 });
@@ -117,7 +121,8 @@ namespace FlatsAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("Area")
                         .HasColumnType("int");
@@ -138,10 +143,10 @@ namespace FlatsAPI.Migrations
                         .HasColumnType("int");
 
                     b.Property<float?>("PricePerMeterSquaredWhenRented")
-                        .HasColumnType("float");
+                        .HasColumnType("real");
 
                     b.Property<float>("PriceWhenBought")
-                        .HasColumnType("float");
+                        .HasColumnType("real");
 
                     b.HasKey("Id");
 
@@ -156,11 +161,12 @@ namespace FlatsAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -171,40 +177,55 @@ namespace FlatsAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int?>("BlockOfFlatsPropertyId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
-                    b.Property<int?>("FlatId")
+                    b.Property<int?>("FlatPropertyId")
                         .HasColumnType("int");
 
-                    b.Property<int>("OwnerId")
-                        .HasColumnType("int");
+                    b.Property<int>("OwnerShip")
+                        .HasColumnType("int")
+                        .HasColumnName("OwnerShip");
 
                     b.Property<bool>("Paid")
-                        .HasColumnType("tinyint(1)");
+                        .HasColumnType("bit")
+                        .HasColumnName("Paid");
 
                     b.Property<DateTime>("PayDate")
-                        .HasColumnType("datetime");
+                        .HasColumnType("datetime2");
 
                     b.Property<float>("Price")
-                        .HasColumnType("float");
+                        .HasColumnType("real")
+                        .HasColumnName("Price");
 
                     b.Property<float>("PriceWithTax")
-                        .HasColumnType("float");
-
-                    b.Property<int>("Property")
-                        .HasColumnType("int");
+                        .HasColumnType("real")
+                        .HasColumnName("PriceWithTax");
 
                     b.Property<int>("PropertyId")
+                        .HasColumnType("int")
+                        .HasColumnName("PropertyId");
+
+                    b.Property<int>("PropertyType")
                         .HasColumnType("int");
+
+                    b.Property<int>("RentIssuerId")
+                        .HasColumnType("int")
+                        .HasColumnName("RentIssuerId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FlatId");
+                    b.HasIndex("BlockOfFlatsPropertyId");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("FlatPropertyId");
+
+                    b.HasIndex("RentIssuerId");
 
                     b.ToTable("Rents");
                 });
@@ -213,11 +234,12 @@ namespace FlatsAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -239,11 +261,11 @@ namespace FlatsAPI.Migrations
                     b.ToTable("PermissionRole");
                 });
 
-            modelBuilder.Entity("AccountRent", b =>
+            modelBuilder.Entity("AccountFlat", b =>
                 {
-                    b.HasOne("FlatsAPI.Entities.Rent", null)
+                    b.HasOne("FlatsAPI.Entities.Flat", null)
                         .WithMany()
-                        .HasForeignKey("RentsId")
+                        .HasForeignKey("RentedFlatsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -256,10 +278,6 @@ namespace FlatsAPI.Migrations
 
             modelBuilder.Entity("FlatsAPI.Entities.Account", b =>
                 {
-                    b.HasOne("FlatsAPI.Entities.Flat", null)
-                        .WithMany("Tenants")
-                        .HasForeignKey("FlatId");
-
                     b.HasOne("FlatsAPI.Entities.Role", "Role")
                         .WithMany("Accounts")
                         .HasForeignKey("RoleId")
@@ -275,13 +293,7 @@ namespace FlatsAPI.Migrations
                         .WithMany("OwnedBlocksOfFlats")
                         .HasForeignKey("OwnerId");
 
-                    b.HasOne("FlatsAPI.Entities.Rent", "Rent")
-                        .WithMany()
-                        .HasForeignKey("RentId");
-
                     b.Navigation("Owner");
-
-                    b.Navigation("Rent");
                 });
 
             modelBuilder.Entity("FlatsAPI.Entities.Flat", b =>
@@ -303,17 +315,25 @@ namespace FlatsAPI.Migrations
 
             modelBuilder.Entity("FlatsAPI.Entities.Rent", b =>
                 {
-                    b.HasOne("FlatsAPI.Entities.Flat", null)
+                    b.HasOne("FlatsAPI.Entities.BlockOfFlats", "BlockOfFlatsProperty")
                         .WithMany("Rents")
-                        .HasForeignKey("FlatId");
+                        .HasForeignKey("BlockOfFlatsPropertyId");
 
-                    b.HasOne("FlatsAPI.Entities.Account", "Owner")
-                        .WithMany("OwnedRents")
-                        .HasForeignKey("OwnerId")
+                    b.HasOne("FlatsAPI.Entities.Flat", "FlatProperty")
+                        .WithMany("Rents")
+                        .HasForeignKey("FlatPropertyId");
+
+                    b.HasOne("FlatsAPI.Entities.Account", "RentIssuer")
+                        .WithMany("Rents")
+                        .HasForeignKey("RentIssuerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Owner");
+                    b.Navigation("BlockOfFlatsProperty");
+
+                    b.Navigation("FlatProperty");
+
+                    b.Navigation("RentIssuer");
                 });
 
             modelBuilder.Entity("PermissionRole", b =>
@@ -337,19 +357,19 @@ namespace FlatsAPI.Migrations
 
                     b.Navigation("OwnedFlats");
 
-                    b.Navigation("OwnedRents");
+                    b.Navigation("Rents");
                 });
 
             modelBuilder.Entity("FlatsAPI.Entities.BlockOfFlats", b =>
                 {
                     b.Navigation("Flats");
+
+                    b.Navigation("Rents");
                 });
 
             modelBuilder.Entity("FlatsAPI.Entities.Flat", b =>
                 {
                     b.Navigation("Rents");
-
-                    b.Navigation("Tenants");
                 });
 
             modelBuilder.Entity("FlatsAPI.Entities.Role", b =>

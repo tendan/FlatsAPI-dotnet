@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 using FlatsAPI.Models;
@@ -33,6 +34,7 @@ namespace FlatsAPI.Entities
         public float PriceWhenBought { get; set; }
         public float? PricePerMeterSquaredWhenRented { get; set; }
 
+        [InverseProperty("FlatProperty")]
         public virtual ICollection<Rent> Rents { get; set; } = new List<Rent>();
     }
 }

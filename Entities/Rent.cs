@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -23,22 +24,30 @@ namespace FlatsAPI.Entities
         [Required]
         public DateTime PayDate { get; set; }
         [Required]
+        [Column("Paid")]
         public bool Paid { get; set; }
 
         [Required]
+        [Column("Price")]
         public float Price { get; set; }
 
         [Required]
+        [Column("OwnerShip")]
         public OwnerShip OwnerShip { get; set; }
 
         [Required]
+        [Column("PriceWithTax")]
         public float PriceWithTax { get; set; }
 
         [Required]
+        [Column("RentIssuerId")]
         public int RentIssuerId { get; set; }
         public virtual Account RentIssuer { get; set; }
 
+        [Column("PropertyId")]
         public int PropertyId { get; set; }
-        public virtual PropertyTypes Property { get; set; }
+        public virtual BlockOfFlats BlockOfFlatsProperty { get; set; }
+        public virtual Flat FlatProperty { get; set; }
+        public virtual PropertyTypes PropertyType { get; set; }
     }
 }
