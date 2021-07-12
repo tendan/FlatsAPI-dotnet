@@ -110,6 +110,8 @@ namespace FlatsAPI
                     PostalCode = "42-360",
                     Floors = 3,
                     Margin = 25,
+                    Owner = _dbContext.Accounts.FirstOrDefault(a => a.Username == "tomasz.dran"),
+                    Price = 450340
                 },
                 new BlockOfFlats()
                 {
@@ -117,6 +119,7 @@ namespace FlatsAPI
                     PostalCode = "31-512",
                     Floors = 9,
                     Margin = 62,
+                    Price = 325500
                 }
             };
             return blocks;
@@ -134,6 +137,7 @@ namespace FlatsAPI
                     Floor = 3,
                     BlockOfFlatsId = 1,
                     PriceWhenBought = 123500,
+                    Owner = _dbContext.Accounts.FirstOrDefault(a => a.Username == "admin")
                 },
                 new Flat()
                 {
@@ -153,6 +157,7 @@ namespace FlatsAPI
                     Floor = 6,
                     BlockOfFlatsId = 2,
                     PriceWhenBought = 42000,
+                    Owner = _dbContext.Accounts.FirstOrDefault(a => a.Username == "tomasz.dran")
                 }
             };
             return flats;
