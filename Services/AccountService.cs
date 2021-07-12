@@ -135,7 +135,7 @@ namespace FlatsAPI.Services
             var baseQuery = _dbContext.Rents
                 .Include(r => r.RentIssuer)
                 .Include(r => r.PropertyId)
-                .Include(r => r.Property)
+                .Include(r => r.PropertyType)
                 .Where(r => (r.RentIssuer.Email == email))
                 .Where(r => query.SearchPhrase == null || (r.RentIssuer.FirstName.ToLower().Contains(query.SearchPhrase.ToLower())
                                                            || r.RentIssuer.LastName.ToLower()
