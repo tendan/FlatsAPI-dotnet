@@ -7,13 +7,15 @@ using System.Threading.Tasks;
 using FlatsAPI.Settings;
 using FlatsAPI.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using System.Threading;
 
 namespace FlatsAPI.Services
 {
     public interface IRentService
     {
-        List<Rent> GenerateRentsForOwnerById(int accountId);
-        void AddTenantRents(int flatId);
+        Task GenerateRentsForOwnerByIdAsync(int accountId, CancellationToken cancellationToken);
+        Task AddTenantRentsAsync(int flatId);
         public void DeleteUnpaidRents();
     }
     public class RentService : IRentService
@@ -27,7 +29,7 @@ namespace FlatsAPI.Services
             _logger = logger;
         }
 
-        public void AddTenantRents(int flatId)
+        public async Task AddTenantRentsAsync(int flatId)
         {
             var flat = _dbContext.Flats.FirstOrDefault(f => f.Id == flatId);
 
@@ -44,39 +46,60 @@ namespace FlatsAPI.Services
             _dbContext.SaveChanges();
         }
 
-        public List<Rent> GenerateRentsForOwnerById(int accountId)
+        public async Task GenerateRentsForOwnerByIdAsync(int accountId, CancellationToken cancellationToken)
         {
             _logger.LogInformation($"Generating rents for account with ID: {accountId}");
-            var account = _dbContext.Accounts.FirstOrDefault(a => a.Id == accountId);
+            var account = _dbContext.Accounts
+                .Include(a => a.OwnedFlats)
+                .Include(a => a.OwnedBlocksOfFlats)
+                .FirstOrDefault(a => a.Id == accountId);
 
             if (account is null)
                 throw new NotFoundException("Account not found");
 
-            var rents = new List<Rent>();
+            var rentsForAccount = _dbContext.Rents.Where(r => r.RentIssuer == account);
 
-            var ownedFlats = _dbContext.Flats.Where(f => f.Owner == account);
-            
-            foreach (var ownedFlat in ownedFlats)
+            foreach (var ownedFlat in account.OwnedFlats.ToList())
             {
-                Console.WriteLine(ownedFlat.ToString());
-                if (ownedFlat.Rents.Any(r => r.Paid && r.OwnerShip == OwnerShip.BOUGHT && r.RentIssuer == account)) continue;
-                var rent = AddRent(ownedFlat.PriceWhenBought, ownedFlat.Id, account, PropertyTypes.Flat, OwnerShip.BOUGHT);
-                ownedFlat.Rents.Add(rent);
-                rents.Add(rent);
+                var rentExists = rentsForAccount.Where(r => r.OwnerShip == OwnerShip.BOUGHT &&
+                r.PropertyType == PropertyTypes.Flat &&
+                r.PropertyId == ownedFlat.Id).Any();
+
+                if (rentExists) { continue; }
+
+                var newRent = AddRent(ownedFlat.PriceWhenBought,
+                    ownedFlat.Id,
+                    account,
+                    PropertyTypes.Flat,
+                    OwnerShip.BOUGHT);
+
+                account.Rents.Add(newRent);
+                _dbContext.Rents.Add(newRent);
+                _dbContext.Update(account);
             }
 
-            var ownedBlocksOfFlats = _dbContext.BlockOfFlats.Where(b => b.Owner == account);
-
-            foreach (var ownedBlockOfFlats in ownedBlocksOfFlats)
+            foreach (var ownedBlockOfFlats in account.OwnedBlocksOfFlats.ToList())
             {
-                if (ownedBlockOfFlats.Rents.Any(r => r.Paid && r.OwnerShip == OwnerShip.BOUGHT && r.RentIssuer == account)) continue;
-                var rent = AddRent(ownedBlockOfFlats.Price, ownedBlockOfFlats.Id, account, PropertyTypes.BlockOfFlats, OwnerShip.BOUGHT);
-                ownedBlockOfFlats.Rents.Add(rent);
-                rents.Add(rent);
-            }
-            _dbContext.SaveChanges();
+                var rentExists = rentsForAccount.Where(r => r.OwnerShip == OwnerShip.BOUGHT &&
+                r.PropertyType == PropertyTypes.BlockOfFlats &&
+                r.PropertyId == ownedBlockOfFlats.Id).Any();
 
-            return rents;
+                if (rentExists) { continue; }
+
+                var newRent = AddRent(ownedBlockOfFlats.Price,
+                    ownedBlockOfFlats.Id,
+                    account,
+                    PropertyTypes.BlockOfFlats,
+                    OwnerShip.BOUGHT);
+
+                account.Rents.Add(newRent);
+                _dbContext.Rents.Add(newRent);
+                _dbContext.Update(account);
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            await Task.Delay(5000, cancellationToken);
         }
 
         public void DeleteUnpaidRents()
@@ -99,8 +122,6 @@ namespace FlatsAPI.Services
                 RentIssuer = account,
                 OwnerShip = ownerShip
             };
-
-            _dbContext.Rents.Add(rent);
 
             return rent;
         }
