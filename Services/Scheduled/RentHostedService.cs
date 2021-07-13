@@ -15,9 +15,8 @@ using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FlatsAPI.Services.Scheduled
 {
-    public class RentHostedService : IHostedService
+    public class RentHostedService : BackgroundService
     {
-        private Timer _timer;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly ILogger<RentHostedService> _logger;
 
@@ -27,20 +26,20 @@ namespace FlatsAPI.Services.Scheduled
             _logger = logger;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(GenerateRents, null, TimeSpan.Zero, TimeSpan.FromSeconds(10));
+            _logger.LogInformation("Rent Hosted Service Running");
 
-            return Task.CompletedTask;
+            await GenerateRents(cancellationToken);
         }
-        public Task StopAsync(CancellationToken cancellationToken)
+        public override async Task StopAsync(CancellationToken cancellationToken)
         {
-            _timer?.Change(Timeout.Infinite, 0);
+            _logger.LogInformation("Rent Hosted Service stopped");
 
-            return Task.CompletedTask;
+            await base.StopAsync(cancellationToken);
         }
 
-        public void GenerateRents(object state)
+        public async Task GenerateRents(CancellationToken cancellationToken)
         {
             _logger.LogInformation("Generating rents...");
             using (var scope = _scopeFactory.CreateScope())
@@ -52,9 +51,12 @@ namespace FlatsAPI.Services.Scheduled
 
                 //using var context = new FlatsDbContext();
 
-                foreach (var account in dbContext.Accounts.ToList())
+                while (!cancellationToken.IsCancellationRequested)
                 {
-                    rentContext.GenerateRentsForOwnerById(account.Id);
+                    foreach (var account in dbContext.Accounts.ToList())
+                    {
+                        await rentContext.GenerateRentsForOwnerByIdAsync(account.Id, cancellationToken);
+                    }
                 }
             }
         }
