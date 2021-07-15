@@ -41,9 +41,9 @@ namespace FlatsAPI.Services
             if (account is null)
                 throw new NotFoundException("Account not found");
 
-            var rentedFlats = account.RentedFlats;
+            var rentedFlats = account.RentedFlats.ToList();
 
-            foreach (var rentedFlat in rentedFlats.ToList())
+            foreach (var rentedFlat in rentedFlats)
             {
                 var rentsForTenant = rentedFlat.Rents.Where(r => r.RentIssuer == account);
 
