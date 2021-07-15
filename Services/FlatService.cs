@@ -19,6 +19,7 @@ namespace FlatsAPI.Services
         FlatDto GetById(int id);
         PagedResult<RentDto> GetRentsById(SearchQuery query, int id);
         void ApplyTenantByIds(int flatId, int tenantId);
+        void ApplyOwnerByIds(int flatId, int ownerId);
         void Delete(int id);
     }
     public class FlatService : IFlatService
@@ -59,6 +60,30 @@ namespace FlatsAPI.Services
                 throw new ForbiddenException("You are not permitted to perform this action");
 
             flat.Tenants.Add(potentialTenant);
+            _dbContext.Flats.Update(flat);
+            _dbContext.SaveChanges();
+        }
+
+        public void ApplyOwnerByIds(int flatId, int ownerId)
+        {
+            var flat = _dbContext.Flats.FirstOrDefault(f => f.Id == flatId);
+
+            if (flat is null)
+                throw new NotFoundException("Flat not found");
+
+            var potentialOwner = _dbContext.Accounts.FirstOrDefault(a => a.Id == ownerId);
+
+            if (potentialOwner is null)
+                throw new NotFoundException("Account not found");
+
+            var userId = (int)_userContextService.GetUserId;
+
+            var isAllowedToApplyOwnerToOthers = _permissionContext.IsPermittedToPerformAction(FlatPermissions.ApplyOwner, userId);
+
+            if (flat.OwnerId != userId && !isAllowedToApplyOwnerToOthers)
+                throw new ForbiddenException("You are not permitted to perform this action");
+
+            flat.Owner = potentialOwner;
             _dbContext.Flats.Update(flat);
             _dbContext.SaveChanges();
         }
