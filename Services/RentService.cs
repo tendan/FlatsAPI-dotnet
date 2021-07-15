@@ -15,7 +15,7 @@ namespace FlatsAPI.Services
     public interface IRentService
     {
         Task GenerateRentsForOwnerByIdAsync(int accountId, CancellationToken cancellationToken);
-        Task AddTenantRentsAsync(int flatId);
+        Task AddTenantRentsAsync(int tenantId, CancellationToken cancellationToken);
         public void DeleteUnpaidRents();
     }
     public class RentService : IRentService
@@ -29,26 +29,54 @@ namespace FlatsAPI.Services
             _logger = logger;
         }
 
-        public async Task AddTenantRentsAsync(int flatId)
+        public async Task AddTenantRentsAsync(int tenantId, CancellationToken cancellationToken)
         {
-            var flat = _dbContext.Flats.FirstOrDefault(f => f.Id == flatId);
+            _logger.LogInformation($"Generating rents for tenant with ID: {tenantId}");
 
-            if (flat is null)
-                throw new NotFoundException("Flat not found");
+            var account = _dbContext.Accounts
+                .Include(a => a.RentedFlats)
+                .Include(a => a.Rents)
+                .FirstOrDefault(a => a.Id == tenantId);
 
-            var tenants = flat.Tenants;
+            if (account is null)
+                throw new NotFoundException("Account not found");
 
-            foreach (var tenant in tenants)
+            var rentedFlats = account.RentedFlats;
+
+            foreach (var rentedFlat in rentedFlats.ToList())
             {
-                var priceWhenRentedIfNotDefined = flat.PriceWhenBought / PaymentSettings.RENTED_SPLIT_UP;
-                AddRent(flat.PricePerMeterSquaredWhenRented ?? priceWhenRentedIfNotDefined, flat.Id, tenant, PropertyTypes.Flat, OwnerShip.RENTED);
-            };
-            _dbContext.SaveChanges();
+                var rentsForTenant = rentedFlat.Rents.Where(r => r.RentIssuer == account);
+
+                var flatId = rentedFlat.Id;
+                var priceWhenRented = rentedFlat.PricePerMeterSquaredWhenRented ?? (rentedFlat.PriceWhenBought / PaymentSettings.RENTED_SPLIT_UP);
+
+                if (rentsForTenant.Any())
+                {
+                    rentsForTenant.ToList().ForEach(async r =>
+                    {
+                        if (r.PayDate.CompareTo(DateTime.Now) <= 0 && !r.Paid)
+                        {
+                            var newRent = AddRent(priceWhenRented, flatId, account, PropertyTypes.Flat, OwnerShip.RENTED);
+                            await _dbContext.Rents.AddAsync(newRent);
+                        }
+                    });
+                } 
+                else
+                {
+                    var newRent = AddRent(priceWhenRented, flatId, account, PropertyTypes.Flat, OwnerShip.RENTED);
+                    await _dbContext.Rents.AddAsync(newRent);
+                }
+            }
+
+            await _dbContext.SaveChangesAsync();
+
+            await Task.Delay(5000, cancellationToken);
         }
 
         public async Task GenerateRentsForOwnerByIdAsync(int accountId, CancellationToken cancellationToken)
         {
-            _logger.LogInformation($"Generating rents for account with ID: {accountId}");
+            _logger.LogInformation($"Generating owner's rents for account with ID: {accountId}");
+
             var account = _dbContext.Accounts
                 .Include(a => a.OwnedFlats)
                 .Include(a => a.OwnedBlocksOfFlats)
@@ -73,9 +101,9 @@ namespace FlatsAPI.Services
                     PropertyTypes.Flat,
                     OwnerShip.BOUGHT);
 
-                account.Rents.Add(newRent);
-                _dbContext.Rents.Add(newRent);
-                _dbContext.Update(account);
+                //account.Rents.Add(newRent);
+                await _dbContext.Rents.AddAsync(newRent);
+                //_dbContext.Update(account);
             }
 
             foreach (var ownedBlockOfFlats in account.OwnedBlocksOfFlats.ToList())
@@ -92,9 +120,9 @@ namespace FlatsAPI.Services
                     PropertyTypes.BlockOfFlats,
                     OwnerShip.BOUGHT);
 
-                account.Rents.Add(newRent);
-                _dbContext.Rents.Add(newRent);
-                _dbContext.Update(account);
+                //account.Rents.Add(newRent);
+                await _dbContext.Rents.AddAsync(newRent);
+                //_dbContext.Update(account);
             }
 
             await _dbContext.SaveChangesAsync();
@@ -110,10 +138,17 @@ namespace FlatsAPI.Services
 
         private Rent AddRent(float price, int propertyId, Account account, PropertyTypes propertyType, OwnerShip ownerShip)
         {
+            var rent = AddRentWithCustomPayDate(price, propertyId, account, DateTime.Now.AddDays(30), propertyType, ownerShip);
+
+            return rent;
+        }
+
+        private Rent AddRentWithCustomPayDate(float price, int propertyId, Account account, DateTime payDate, PropertyTypes propertyType, OwnerShip ownerShip)
+        {
             var rent = new Rent()
             {
                 CreationDate = DateTime.Now,
-                PayDate = DateTime.Now.AddDays(30),
+                PayDate = payDate,
                 Paid = false,
                 Price = price,
                 PriceWithTax = price * PaymentSettings.TAX,
