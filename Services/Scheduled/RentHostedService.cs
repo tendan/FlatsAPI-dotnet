@@ -56,6 +56,7 @@ namespace FlatsAPI.Services.Scheduled
                     foreach (var account in dbContext.Accounts.ToList())
                     {
                         await rentContext.GenerateRentsForOwnerByIdAsync(account.Id, cancellationToken);
+                        await rentContext.AddTenantRentsAsync(account.Id, cancellationToken);
                     }
                 }
             }
