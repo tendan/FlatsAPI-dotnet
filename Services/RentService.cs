@@ -106,10 +106,14 @@ namespace FlatsAPI.Services
                 r.PropertyType == PropertyTypes.Flat &&
                 r.PropertyId == ownedFlat.Id).Any();
 
+                var flatId = ownedFlat.Id;
+
+                var priceWhenBought = ownedFlat.PriceWhenBought;
+
                 if (rentExists) { continue; }
 
-                var newRent = AddRent(ownedFlat.PriceWhenBought,
-                    ownedFlat.Id,
+                var newRent = AddRent(priceWhenBought,
+                    flatId,
                     account,
                     PropertyTypes.Flat,
                     OwnerShip.BOUGHT);
@@ -127,10 +131,14 @@ namespace FlatsAPI.Services
                 r.PropertyType == PropertyTypes.BlockOfFlats &&
                 r.PropertyId == ownedBlockOfFlats.Id).Any();
 
+                var blockOfFlatsId = ownedBlockOfFlats.Id;
+
+                var price = ownedBlockOfFlats.Price;
+
                 if (rentExists) { continue; }
 
-                var newRent = AddRent(ownedBlockOfFlats.Price,
-                    ownedBlockOfFlats.Id,
+                var newRent = AddRent(price,
+                    blockOfFlatsId,
                     account,
                     PropertyTypes.BlockOfFlats,
                     OwnerShip.BOUGHT);
