@@ -45,9 +45,7 @@ namespace FlatsAPI.Services
 
             foreach (var rentedFlat in rentedFlats)
             {
-                var flat = _dbContext.Flats.Include(f => f.Rents).FirstOrDefault(f => f == rentedFlat);
-
-                var rentsForTenant = flat.Rents.ToList();
+                var rentsForTenant = rentedFlat.Rents.ToList();
 
                 var flatId = rentedFlat.Id;
 
@@ -61,7 +59,7 @@ namespace FlatsAPI.Services
                         {
                             var newRent = AddRent(priceWhenRented, flatId, account, PropertyTypes.Flat, OwnerShip.RENTED);
 
-                            flat.Rents.Add(newRent);
+                            rentedFlat.Rents.Add(newRent);
 
                             await _dbContext.Rents.AddAsync(newRent);
 
@@ -73,7 +71,7 @@ namespace FlatsAPI.Services
                 {
                     var newRent = AddRent(priceWhenRented, flatId, account, PropertyTypes.Flat, OwnerShip.RENTED);
 
-                    flat.Rents.Add(newRent);
+                    rentedFlat.Rents.Add(newRent);
 
                     await _dbContext.Rents.AddAsync(newRent);
 
