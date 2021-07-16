@@ -45,9 +45,12 @@ namespace FlatsAPI.Services
 
             foreach (var rentedFlat in rentedFlats)
             {
-                var rentsForTenant = rentedFlat.Rents.Where(r => r.RentIssuer == account);
+                var flat = _dbContext.Flats.Include(f => f.Rents).FirstOrDefault(f => f == rentedFlat);
+
+                var rentsForTenant = flat.Rents.ToList();
 
                 var flatId = rentedFlat.Id;
+
                 var priceWhenRented = rentedFlat.PricePerMeterSquaredWhenRented ?? (rentedFlat.PriceWhenBought / PaymentSettings.RENTED_SPLIT_UP);
 
                 if (rentsForTenant.Any())
@@ -57,14 +60,24 @@ namespace FlatsAPI.Services
                         if (r.PayDate.CompareTo(DateTime.Now) <= 0 && !r.Paid)
                         {
                             var newRent = AddRent(priceWhenRented, flatId, account, PropertyTypes.Flat, OwnerShip.RENTED);
+
+                            flat.Rents.Add(newRent);
+
                             await _dbContext.Rents.AddAsync(newRent);
+
+                            _dbContext.Update(rentedFlat);
                         }
                     });
                 } 
                 else
                 {
                     var newRent = AddRent(priceWhenRented, flatId, account, PropertyTypes.Flat, OwnerShip.RENTED);
+
+                    flat.Rents.Add(newRent);
+
                     await _dbContext.Rents.AddAsync(newRent);
+
+                    _dbContext.Update(rentedFlat);
                 }
             }
 
@@ -101,9 +114,11 @@ namespace FlatsAPI.Services
                     PropertyTypes.Flat,
                     OwnerShip.BOUGHT);
 
-                //account.Rents.Add(newRent);
+                ownedFlat.Rents.Add(newRent);
+
                 await _dbContext.Rents.AddAsync(newRent);
-                //_dbContext.Update(account);
+
+                _dbContext.Update(ownedFlat);
             }
 
             foreach (var ownedBlockOfFlats in account.OwnedBlocksOfFlats.ToList())
@@ -120,9 +135,11 @@ namespace FlatsAPI.Services
                     PropertyTypes.BlockOfFlats,
                     OwnerShip.BOUGHT);
 
-                //account.Rents.Add(newRent);
+                ownedBlockOfFlats.Rents.Add(newRent);
+
                 await _dbContext.Rents.AddAsync(newRent);
-                //_dbContext.Update(account);
+
+                _dbContext.Update(ownedBlockOfFlats);
             }
 
             await _dbContext.SaveChangesAsync();

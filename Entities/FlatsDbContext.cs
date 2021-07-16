@@ -83,6 +83,14 @@ namespace FlatsAPI.Entities
                 .HasOne(f => f.Owner)
                 .WithMany(a => a.OwnedFlats);
 
+            modelBuilder.Entity<Flat>()
+                .HasMany(f => f.Rents)
+                .WithOne(r => r.FlatProperty);
+
+            modelBuilder.Entity<BlockOfFlats>()
+                .HasMany(b => b.Rents)
+                .WithOne(r => r.BlockOfFlatsProperty);
+
             modelBuilder.Entity<BlockOfFlats>()
                 .HasOne(f => f.Owner)
                 .WithMany(a => a.OwnedBlocksOfFlats);
