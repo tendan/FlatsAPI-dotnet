@@ -23,19 +23,6 @@ namespace FlatsAPI.Entities
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            /*
-            modelBuilder.Entity<BlockOfFlats>()
-                .HasMany(b => b.Flats)
-                .WithOne(f => f.BlockOfFlats);
-
-            modelBuilder.Entity<Role>()
-                .HasMany(r => r.Permissions)
-                .WithMany(p => p.Roles);
-
-            modelBuilder.Entity<Role>()
-                .HasMany(r => r.Accounts)
-                .WithOne(a => a.Role);*/
-
             modelBuilder.Entity<Account>()
                 .HasOne(a => a.Role)
                 .WithMany(r => r.Accounts)
