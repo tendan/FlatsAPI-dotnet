@@ -1,4 +1,5 @@
 ﻿using FlatsAPI.Entities;
+using FlatsAPI.Settings.Roles;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
@@ -35,7 +36,7 @@ namespace FlatsAPI.Models.Validators
                 .Equal(e => e.Password);
 
             RuleFor(a => a.RoleId)
-                .NotEqual(3)
+                .NotEqual(dbContext.Roles.FirstOrDefault(r => r.Name == AdminRole.Name).Id)
                 .WithMessage("You cannot create Admin account");
 
             RuleFor(a => a.Email)
