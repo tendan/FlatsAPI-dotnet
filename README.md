@@ -6,7 +6,9 @@ Available features for now:
 - Adding new accounts validation
 
 Dependencies used in this project:
-- AutoMapper (10.1.1)
+- AutoMapper.Extensions.Microsoft.DependencyInjection (8.1.1)
 - FluentValidation (10.2.3)
+- Microsoft.AspNetCore.Authentication.JwtBearer (5.0.7)
 - Microsoft.EntityFrameworkCore (5.0.7)
-- MySql.EntityFrameworkCore (5.0.3.1)
+- Microsoft.EntityFrameworkCore.SqlServer (5.0.7)
+- Microsoft.EntityFrameworkCore.Tools (5.0.7)
