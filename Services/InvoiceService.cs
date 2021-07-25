@@ -83,9 +83,9 @@ namespace FlatsAPI.Services
                 // Index number add
                 table.AddCell($"{index++}.");
 
+                // Product/service name add
                 var property = rent.PropertyType == PropertyTypes.BlockOfFlats ? "Block of Flats" : "Flat";
 
-                // Product/service name add
                 if (rent.PropertyType == PropertyTypes.BlockOfFlats)
                 {
                     var blockOfFlats = _dbContext.BlockOfFlats.FirstOrDefault(b => b.Id == rent.PropertyId);
