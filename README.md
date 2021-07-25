@@ -18,3 +18,4 @@ Dependencies used in this project:
 - Microsoft.EntityFrameworkCore (5.0.8)
 - Microsoft.EntityFrameworkCore.SqlServer (5.0.8)
 - Microsoft.EntityFrameworkCore.Tools (5.0.8)
+- itext7 (7.1.16)
