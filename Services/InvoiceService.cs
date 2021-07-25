@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FlatsAPI.Settings;
 
 namespace FlatsAPI.Services
 {
@@ -36,28 +37,92 @@ namespace FlatsAPI.Services
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf);
         }
-        private Table GenerateRentsTable()
+        private Table GenerateRentsTable(ICollection<Rent> rents)
         {
-            var table = new Table(4, false);
+            var table = new Table(6, false);
 
             table.SetHorizontalAlignment(HorizontalAlignment.RIGHT);
             table.SetWidth(UnitValue.CreatePercentValue(50));
 
             var tableHeader1 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.LEFT)
-                .Add(new Paragraph("Stawka VAT"));
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("in."));
 
             var tableHeader2 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.LEFT)
-                .Add(new Paragraph("Netto"));
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("Service/product name"));
 
             var tableHeader3 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.LEFT)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("Netto price"));
+            
+            var tableHeader4 = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
                 .Add(new Paragraph("VAT"));
 
-            var tableHeader4 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.LEFT)
-                .Add(new Paragraph("Brutto"));
+            var tableHeader5 = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("VAT rate"));
+            
+            var tableHeader6 = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("Price"));
+
+            table.AddCell(tableHeader1);
+            table.AddCell(tableHeader2);
+            table.AddCell(tableHeader3);
+            table.AddCell(tableHeader4);
+            table.AddCell(tableHeader5);
+            table.AddCell(tableHeader6);
+
+            var index = 1;
+
+            foreach (var rent in rents)
+            {
+                // Index number add
+                table.AddCell($"{index}.");
+
+                var property = rent.PropertyType == PropertyTypes.BlockOfFlats ? "Block of Flats" : "Flat";
+
+                // Product/service name add
+                if (rent.PropertyType == PropertyTypes.BlockOfFlats)
+                {
+                    var blockOfFlats = _dbContext.BlockOfFlats.FirstOrDefault(b => b.Id == rent.PropertyId);
+
+                    var address = blockOfFlats.Address;
+
+                    table.AddCell($"{property} on {address}");
+                }
+                else
+                {
+                    var flat = _dbContext.Flats.FirstOrDefault(f => f.Id == rent.PropertyId);
+
+                    var address = flat.BlockOfFlats.Address;
+
+                    var number = flat.Number;
+
+                    table.AddCell($"{property} on {address} no. {number}");
+                }
+
+                // Netto price add
+                var formattedNettoPrice = rent.Price.ToString("C");
+                table.AddCell(formattedNettoPrice + "zł");
+
+                // VAT percentage add
+                var percentage = (PaymentSettings.TAX - 1) * 100;
+                var percentageCurrencyString = percentage.ToString("C");
+                table.AddCell($"{percentageCurrencyString}%");
+
+                // VAT rate add
+                var rate = (rent.Price * percentage).ToString("C");
+                table.AddCell(rate);
+
+                // Brutto price add
+                var bruttoPrice = rent.PriceWithTax.ToString("C");
+                table.AddCell(bruttoPrice);
+
+                index++;
+            }
 
             return table;
         }
