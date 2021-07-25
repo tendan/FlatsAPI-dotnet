@@ -10,6 +10,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using FlatsAPI.Settings;
+using System.Globalization;
 
 namespace FlatsAPI.Services
 {
@@ -105,8 +106,8 @@ namespace FlatsAPI.Services
                 }
 
                 // Netto price add
-                var formattedNettoPrice = rent.Price.ToString("C");
-                table.AddCell(formattedNettoPrice + "zł");
+                var formattedNettoPrice = rent.Price.ToString("C", CultureInfo.CurrentCulture);
+                table.AddCell(formattedNettoPrice);
 
                 // VAT percentage add
                 var percentage = (PaymentSettings.TAX - 1) * 100;
@@ -114,11 +115,11 @@ namespace FlatsAPI.Services
                 table.AddCell($"{percentageCurrencyString}%");
 
                 // VAT rate add
-                var rate = (rent.Price * percentage).ToString("C");
+                var rate = (rent.Price * percentage).ToString("C", CultureInfo.CurrentCulture);
                 table.AddCell(rate);
 
                 // Brutto price add
-                var bruttoPrice = rent.PriceWithTax.ToString("C");
+                var bruttoPrice = rent.PriceWithTax.ToString("C", CultureInfo.CurrentCulture);
                 table.AddCell(bruttoPrice);
 
                 index++;
