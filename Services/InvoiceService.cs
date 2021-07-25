@@ -81,7 +81,7 @@ namespace FlatsAPI.Services
             foreach (var rent in rents)
             {
                 // Index number add
-                table.AddCell($"{index}.");
+                table.AddCell($"{index++}.");
 
                 var property = rent.PropertyType == PropertyTypes.BlockOfFlats ? "Block of Flats" : "Flat";
 
@@ -121,8 +121,6 @@ namespace FlatsAPI.Services
                 // Brutto price add
                 var bruttoPrice = rent.PriceWithTax.ToString("C", CultureInfo.CurrentCulture);
                 table.AddCell(bruttoPrice);
-
-                index++;
             }
 
             return table;
