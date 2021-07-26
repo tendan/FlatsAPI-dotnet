@@ -40,10 +40,9 @@ namespace FlatsAPI.Services
         }
         private Table GenerateRentsTable(ICollection<Rent> rents)
         {
-            var table = new Table(6, false);
-
-            table.SetHorizontalAlignment(HorizontalAlignment.RIGHT);
-            table.SetWidth(UnitValue.CreatePercentValue(50));
+            var table = new Table(6, false)
+                .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
+                .SetWidth(UnitValue.CreatePercentValue(50));
 
             var tableHeaderBase = new Cell(1, 1)
                 .SetTextAlignment(TextAlignment.CENTER);
@@ -118,10 +117,9 @@ namespace FlatsAPI.Services
         }
         private Table GenerateSummaryTable(float nettoSummary, float vatSummary)
         {
-            var table = new Table(4, false);
-
-            table.SetHorizontalAlignment(HorizontalAlignment.RIGHT);
-            table.SetWidth(UnitValue.CreatePercentValue(50));
+            var table = new Table(4, false)
+                .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
+                .SetWidth(UnitValue.CreatePercentValue(50));
 
             var tableHeaderBase = new Cell(1, 1)
                 .SetTextAlignment(TextAlignment.CENTER);
