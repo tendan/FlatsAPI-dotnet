@@ -45,29 +45,20 @@ namespace FlatsAPI.Services
             table.SetHorizontalAlignment(HorizontalAlignment.RIGHT);
             table.SetWidth(UnitValue.CreatePercentValue(50));
 
-            var tableHeader1 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.CENTER)
-                .Add(new Paragraph("in."));
+            var tableHeaderBase = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER);
 
-            var tableHeader2 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.CENTER)
-                .Add(new Paragraph("Service/product name"));
+            var tableHeader1 = tableHeaderBase.Add(new Paragraph("Service/product name"));
 
-            var tableHeader3 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.CENTER)
-                .Add(new Paragraph("Netto price"));
+            var tableHeader2 = tableHeaderBase.Add(new Paragraph("Service/product name"));
+
+            var tableHeader3 = tableHeaderBase.Add(new Paragraph("Netto price"));
             
-            var tableHeader4 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.CENTER)
-                .Add(new Paragraph("VAT"));
+            var tableHeader4 = tableHeaderBase.Add(new Paragraph("VAT"));
 
-            var tableHeader5 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.CENTER)
-                .Add(new Paragraph("VAT rate"));
+            var tableHeader5 = tableHeaderBase.Add(new Paragraph("VAT rate"));
             
-            var tableHeader6 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.CENTER)
-                .Add(new Paragraph("Price"));
+            var tableHeader6 = tableHeaderBase.Add(new Paragraph("Price"));
 
             table.AddHeaderCell(tableHeader1);
             table.AddHeaderCell(tableHeader2);
@@ -132,21 +123,16 @@ namespace FlatsAPI.Services
             table.SetHorizontalAlignment(HorizontalAlignment.RIGHT);
             table.SetWidth(UnitValue.CreatePercentValue(50));
 
-            var tableHeader1 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.CENTER)
-                .Add(new Paragraph("Stawka VAT"));
+            var tableHeaderBase = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER);
 
-            var tableHeader2 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.CENTER)
-                .Add(new Paragraph("Netto"));
+            var tableHeader1 = tableHeaderBase.Add(new Paragraph("Stawka VAT"));
 
-            var tableHeader3 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.CENTER)
-                .Add(new Paragraph("VAT"));
+            var tableHeader2 = tableHeaderBase.Add(new Paragraph("Netto"));
 
-            var tableHeader4 = new Cell(1, 1)
-                .SetTextAlignment(TextAlignment.CENTER)
-                .Add(new Paragraph("Brutto"));
+            var tableHeader3 = tableHeaderBase.Add(new Paragraph("VAT"));
+
+            var tableHeader4 = tableHeaderBase.Add(new Paragraph("Brutto"));
 
             table.AddHeaderCell(tableHeader1);
             table.AddHeaderCell(tableHeader2);
