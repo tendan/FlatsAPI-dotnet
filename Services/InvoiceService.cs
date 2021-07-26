@@ -111,7 +111,7 @@ namespace FlatsAPI.Services
 
                 // VAT percentage add
                 var percentage = (PaymentSettings.TAX - 1) * 100;
-                var percentageCurrencyString = percentage.ToString("C");
+                var percentageCurrencyString = percentage.ToString();
                 table.AddCell($"{percentageCurrencyString}%");
 
                 // VAT rate add
@@ -152,6 +152,23 @@ namespace FlatsAPI.Services
             table.AddHeaderCell(tableHeader2);
             table.AddHeaderCell(tableHeader3);
             table.AddHeaderCell(tableHeader4);
+
+            // VAT add
+            var percentage = (PaymentSettings.TAX - 1) * 100;
+            var percentageCurrencyString = percentage.ToString();
+            table.AddCell($"{percentageCurrencyString}%");
+
+            // Netto summary add
+            var nettoSummaryCurrencyString = nettoSummary.ToString("C", CultureInfo.CurrentCulture);
+            table.AddCell(nettoSummaryCurrencyString);
+
+            // VAT summary add
+            var vatSummaryCurrencyString = vatSummary.ToString("C", CultureInfo.CurrentCulture);
+            table.AddCell(vatSummaryCurrencyString);
+
+            // Brutto add
+            var brutto = (nettoSummary + vatSummary).ToString("C", CultureInfo.CurrentCulture);
+            table.AddCell(brutto);
 
             return table;
         }
