@@ -69,12 +69,12 @@ namespace FlatsAPI.Services
                 .SetTextAlignment(TextAlignment.CENTER)
                 .Add(new Paragraph("Price"));
 
-            table.AddCell(tableHeader1);
-            table.AddCell(tableHeader2);
-            table.AddCell(tableHeader3);
-            table.AddCell(tableHeader4);
-            table.AddCell(tableHeader5);
-            table.AddCell(tableHeader6);
+            table.AddHeaderCell(tableHeader1);
+            table.AddHeaderCell(tableHeader2);
+            table.AddHeaderCell(tableHeader3);
+            table.AddHeaderCell(tableHeader4);
+            table.AddHeaderCell(tableHeader5);
+            table.AddHeaderCell(tableHeader6);
 
             var index = 1;
 
@@ -122,6 +122,36 @@ namespace FlatsAPI.Services
                 var bruttoPrice = rent.PriceWithTax.ToString("C", CultureInfo.CurrentCulture);
                 table.AddCell(bruttoPrice);
             }
+
+            return table;
+        }
+        private Table CreateSummaryTable(float nettoSummary, float vatSummary)
+        {
+            var table = new Table(4, false);
+
+            table.SetHorizontalAlignment(HorizontalAlignment.RIGHT);
+            table.SetWidth(UnitValue.CreatePercentValue(50));
+
+            var tableHeader1 = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("Stawka VAT"));
+
+            var tableHeader2 = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("Netto"));
+
+            var tableHeader3 = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("VAT"));
+
+            var tableHeader4 = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("Brutto"));
+
+            table.AddHeaderCell(tableHeader1);
+            table.AddHeaderCell(tableHeader2);
+            table.AddHeaderCell(tableHeader3);
+            table.AddHeaderCell(tableHeader4);
 
             return table;
         }
