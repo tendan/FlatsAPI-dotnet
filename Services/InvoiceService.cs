@@ -125,7 +125,7 @@ namespace FlatsAPI.Services
 
             return table;
         }
-        private Table CreateSummaryTable(float nettoSummary, float vatSummary)
+        private Table GenerateSummaryTable(float nettoSummary, float vatSummary)
         {
             var table = new Table(4, false);
 
