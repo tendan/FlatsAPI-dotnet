@@ -20,6 +20,7 @@ namespace FlatsAPI.Services
     }
     public class InvoiceService : IInvoiceService
     {
+        private const string DateFormat = "yyyy-MM-dd";
         private readonly FlatsDbContext _dbContext;
 
         public InvoiceService(FlatsDbContext dbContext)
@@ -37,6 +38,31 @@ namespace FlatsAPI.Services
             var writer = new PdfWriter(stream);
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf);
+        }
+        private Div GenerateBeginning()
+        {
+            var header = new Div();
+
+            var currentDate = DateTime.Now;
+
+            var paragraphBase = new Paragraph()
+                .SetHorizontalAlignment(HorizontalAlignment.RIGHT);
+
+            var placeParagraph = paragraphBase.Add("Kielce");
+
+            var invoiceDate = currentDate.ToString(DateFormat);
+
+            var invoiceDateParagraph = paragraphBase.Add(invoiceDate);
+            
+            string dueDate = currentDate.AddDays(20).ToString(DateFormat);
+            
+            var dueDateParagraph = paragraphBase.Add(dueDate);
+
+            header.Add(placeParagraph);
+            header.Add(invoiceDateParagraph);
+            header.Add(dueDateParagraph);
+
+            return header;
         }
         private Table GenerateRentsTable(ICollection<Rent> rents)
         {
