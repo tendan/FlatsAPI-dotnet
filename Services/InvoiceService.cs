@@ -11,6 +11,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using FlatsAPI.Settings;
 using System.Globalization;
+using FlatsAPI.Models;
 
 namespace FlatsAPI.Services
 {
@@ -32,12 +33,18 @@ namespace FlatsAPI.Services
         {
             throw new NotImplementedException();
         }
-        private void GeneratePdf(int accountId)
+        private void GeneratePdf(Account account)
         {
+            var accountRents = account.Rents;
+
             var stream = new MemoryStream();
             var writer = new PdfWriter(stream);
             var pdf = new PdfDocument(writer);
             var document = new Document(pdf);
+
+            var beginning = GenerateBeginning();
+            var rentsTable = GenerateRentsTable(accountRents);
+            var summaryTable = GenerateSummaryTable(0, 0);
         }
         private Div GenerateBeginning()
         {
@@ -53,9 +60,9 @@ namespace FlatsAPI.Services
             var invoiceDate = currentDate.ToString(DateFormat);
 
             var invoiceDateParagraph = paragraphBase.Add(invoiceDate);
-            
+
             string dueDate = currentDate.AddDays(20).ToString(DateFormat);
-            
+
             var dueDateParagraph = paragraphBase.Add(dueDate);
 
             header.Add(placeParagraph);
@@ -78,11 +85,11 @@ namespace FlatsAPI.Services
             var tableHeader2 = tableHeaderBase.Add(new Paragraph("Service/product name"));
 
             var tableHeader3 = tableHeaderBase.Add(new Paragraph("Netto price"));
-            
+
             var tableHeader4 = tableHeaderBase.Add(new Paragraph("VAT"));
 
             var tableHeader5 = tableHeaderBase.Add(new Paragraph("VAT rate"));
-            
+
             var tableHeader6 = tableHeaderBase.Add(new Paragraph("Price"));
 
             table.AddHeaderCell(tableHeader1);
@@ -181,6 +188,24 @@ namespace FlatsAPI.Services
             table.AddCell(brutto);
 
             return table;
+        }
+        private NettoAndVat CalculateSummaryOfNettoAndVat(List<Rent> rents)
+        {
+            var nettoSummary = 0f;
+            var vatSummary = 0f;
+
+            foreach (var rent in rents)
+            {
+                nettoSummary += rent.Price;
+                vatSummary += rent.Price * (PaymentSettings.TAX - 1);
+            }
+
+            NettoAndVat nettoAndVat = new() { 
+                NettoSummary = nettoSummary, 
+                VatSummary = vatSummary 
+            };
+
+            return nettoAndVat;
         }
     }
 }
