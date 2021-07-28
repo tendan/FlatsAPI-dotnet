@@ -11,7 +11,7 @@ namespace FlatsAPI.Settings
 {
     public class DocumentSettings
     {
-        public PdfFont PrimaryFont { get; } = PdfFontFactory.CreateFont(StandardFonts.HELVETICA, PdfEncodings.UTF8);
-        public PdfFont SecondaryFont { get; } = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_OBLIQUE, PdfEncodings.UTF8);
+        public static PdfFont PrimaryFont { get; } = PdfFontFactory.CreateFont(StandardFonts.HELVETICA, PdfEncodings.UTF8);
+        public static PdfFont SecondaryFont { get; } = PdfFontFactory.CreateFont(StandardFonts.HELVETICA, PdfEncodings.UTF8);
     }
 }
