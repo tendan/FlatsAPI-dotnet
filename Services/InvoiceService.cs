@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using FlatsAPI.Settings;
 using System.Globalization;
 using FlatsAPI.Models;
+using iText.Layout.Borders;
 
 namespace FlatsAPI.Services
 {
@@ -71,6 +72,26 @@ namespace FlatsAPI.Services
 
             return header;
         }
+        private Table GenerateBuyerSellerChapter(Account buyer)
+        {
+            var table = new Table(2)
+                .SetHorizontalAlignment(HorizontalAlignment.LEFT)
+                .SetWidth(UnitValue.CreatePercentValue(66));
+
+            var headerCellBase = new Cell(1, 1)
+                .SetBorder(Border.NO_BORDER)
+                .SetPadding(5);
+
+            var sellerCell = headerCellBase.Add(new Paragraph("Seller"));
+            var buyerCell = headerCellBase.Add(new Paragraph("Buyer"));
+
+            table
+                .AddHeaderCell(sellerCell)
+                .AddHeaderCell(buyerCell);
+
+            return table;
+            
+        }
         private Table GenerateRentsTable(ICollection<Rent> rents)
         {
             var table = new Table(6, false)
@@ -80,7 +101,7 @@ namespace FlatsAPI.Services
             var tableHeaderBase = new Cell(1, 1)
                 .SetTextAlignment(TextAlignment.CENTER);
 
-            var tableHeader1 = tableHeaderBase.Add(new Paragraph("Service/product name"));
+            var tableHeader1 = tableHeaderBase.Add(new Paragraph("In."));
 
             var tableHeader2 = tableHeaderBase.Add(new Paragraph("Service/product name"));
 
@@ -92,12 +113,13 @@ namespace FlatsAPI.Services
 
             var tableHeader6 = tableHeaderBase.Add(new Paragraph("Price"));
 
-            table.AddHeaderCell(tableHeader1);
-            table.AddHeaderCell(tableHeader2);
-            table.AddHeaderCell(tableHeader3);
-            table.AddHeaderCell(tableHeader4);
-            table.AddHeaderCell(tableHeader5);
-            table.AddHeaderCell(tableHeader6);
+            table
+                .AddHeaderCell(tableHeader1)
+                .AddHeaderCell(tableHeader2)
+                .AddHeaderCell(tableHeader3)
+                .AddHeaderCell(tableHeader4)
+                .AddHeaderCell(tableHeader5)
+                .AddHeaderCell(tableHeader6);
 
             var index = 1;
 
@@ -165,10 +187,11 @@ namespace FlatsAPI.Services
 
             var tableHeader4 = tableHeaderBase.Add(new Paragraph("Brutto"));
 
-            table.AddHeaderCell(tableHeader1);
-            table.AddHeaderCell(tableHeader2);
-            table.AddHeaderCell(tableHeader3);
-            table.AddHeaderCell(tableHeader4);
+            table
+                .AddHeaderCell(tableHeader1)
+                .AddHeaderCell(tableHeader2)
+                .AddHeaderCell(tableHeader3)
+                .AddHeaderCell(tableHeader4);
 
             // VAT add
             var percentage = (PaymentSettings.TAX - 1) * 100;
