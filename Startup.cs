@@ -102,6 +102,7 @@ namespace FlatsAPI
             services.AddScoped<IBlockOfFlatsService, BlockOfFlatsService>();
             services.AddScoped<IFlatService, FlatService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IInvoiceService, InvoiceService>();
             services.AddTransient<IRentService, RentService>();
 
             // Hosted services
