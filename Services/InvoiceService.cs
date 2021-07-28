@@ -34,18 +34,27 @@ namespace FlatsAPI.Services
         {
             throw new NotImplementedException();
         }
-        private void GeneratePdf(Account account)
+        private Document GeneratePdf(Account account)
         {
             var accountRents = account.Rents;
 
-            var stream = new MemoryStream();
-            var writer = new PdfWriter(stream);
-            var pdf = new PdfDocument(writer);
-            var document = new Document(pdf);
+            using var stream = new MemoryStream();
+            using var writer = new PdfWriter(stream);
+            using var pdf = new PdfDocument(writer);
+            using var document = new Document(pdf);
 
             var beginning = GenerateBeginning();
+            var buyerSellerChapter = GenerateBuyerSellerChapter(account);
             var rentsTable = GenerateRentsTable(accountRents);
             var summaryTable = GenerateSummaryTable(0, 0);
+
+            document
+                .Add(beginning)
+                .Add(buyerSellerChapter)
+                .Add(rentsTable)
+                .Add(summaryTable);
+
+            return document;
         }
         private Div GenerateBeginning()
         {
