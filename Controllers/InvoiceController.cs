@@ -26,7 +26,7 @@ namespace FlatsAPI.Controllers
             string contentType = invoice.ContentType;
             string fileName = invoice.FileName;
 
-            return base.File(fileContents, contentType, fileName);
+            return File(fileContents, contentType, fileName);
         }
     }
 }
