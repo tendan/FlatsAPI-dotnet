@@ -46,7 +46,13 @@ namespace FlatsAPI.Services
             var beginning = GenerateBeginning();
             var buyerSellerChapter = GenerateBuyerSellerChapter(account);
             var rentsTable = GenerateRentsTable(accountRents);
-            var summaryTable = GenerateSummaryTable(0, 0);
+
+            var nettoAndVat = CalculateSummaryOfNettoAndVat(accountRents);
+
+            var nettoSummary = nettoAndVat.NettoSummary;
+            var vatSummary = nettoAndVat.VatSummary;
+
+            var summaryTable = GenerateSummaryTable(nettoSummary, vatSummary);
 
             document
                 .Add(beginning)
@@ -221,7 +227,7 @@ namespace FlatsAPI.Services
 
             return table;
         }
-        private NettoAndVat CalculateSummaryOfNettoAndVat(List<Rent> rents)
+        private NettoAndVat CalculateSummaryOfNettoAndVat(ICollection<Rent> rents)
         {
             var nettoSummary = 0f;
             var vatSummary = 0f;
