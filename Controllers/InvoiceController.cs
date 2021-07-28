@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FlatsAPI.Services;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,13 +11,22 @@ namespace FlatsAPI.Controllers
     [Route("api/invoice")]
     public class InvoiceController : Controller
     {
-        /**
-         * Needs to be refactored
-         */
-        [HttpGet]
-        public ActionResult GetInvoice()
+        private readonly IInvoiceService _invoiceService;
+
+        public InvoiceController(IInvoiceService invoiceService)
         {
-            return NoContent();
+            _invoiceService = invoiceService;
+        }
+        [HttpGet("{id}")]
+        public ActionResult GetInvoice([FromRoute]int id)
+        {
+            var invoice = _invoiceService.GetInvoiceForSpecifiedAccount(id);
+
+            byte[] fileContents = invoice.FileContents;
+            string contentType = invoice.ContentType;
+            string fileName = invoice.FileName;
+
+            return base.File(fileContents, contentType, fileName);
         }
     }
 }
