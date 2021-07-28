@@ -14,12 +14,13 @@ using System.Globalization;
 using FlatsAPI.Models;
 using iText.Layout.Borders;
 using FlatsAPI.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlatsAPI.Services
 {
     public interface IInvoiceService
     {
-        byte[] GetInvoiceForSpecifiedAccount(int accountId);
+        Invoice GetInvoiceForSpecifiedAccount(int accountId);
     }
     public class InvoiceService : IInvoiceService
     {
@@ -31,7 +32,7 @@ namespace FlatsAPI.Services
             _dbContext = dbContext;
         }
 
-        public byte[] GetInvoiceForSpecifiedAccount(int accountId)
+        public Invoice GetInvoiceForSpecifiedAccount(int accountId)
         {
             var account = _dbContext.Accounts.FirstOrDefault(a => a.Id == accountId);
 
@@ -40,11 +41,20 @@ namespace FlatsAPI.Services
 
             var document = GeneratePdf(account, out string fileName);
 
-            throw new NotImplementedException();
+            var fileContents = document.ToArray();
+
+            Invoice invoice = new()
+            {
+                FileContents = fileContents,
+                ContentType = "application/pdf",
+                FileName = fileName
+            };
+
+            return invoice;
         }
-        private Document GeneratePdf(Account account, out string fileName)
+        private MemoryStream GeneratePdf(Account account, out string fileName)
         {
-            var accountRents = account.Rents;
+            var accountRents = _dbContext.Rents.Where(r => r.RentIssuer == account && !r.Paid).ToList();
 
             using var stream = new MemoryStream();
             using var writer = new PdfWriter(stream);
@@ -52,7 +62,7 @@ namespace FlatsAPI.Services
             using var document = new Document(pdf);
 
             var beginning = GenerateBeginning();
-            var buyerSellerChapter = GenerateBuyerSellerChapter(account);
+            var buyerSellerChapter = GenerateBuyerSellerInvoiceChapter(account);
             var rentsTable = GenerateRentsTable(accountRents);
 
             var nettoAndVat = CalculateSummaryOfNettoAndVat(accountRents);
@@ -68,11 +78,11 @@ namespace FlatsAPI.Services
                 .Add(rentsTable)
                 .Add(summaryTable);
 
-            var generatedId = (int)new Random().Next();
+            var generatedId = new Random().Next();
 
             fileName = $"invoice_{generatedId}_{account.FirstName}_{account.LastName}";
 
-            return document;
+            return stream;
         }
         private Div GenerateBeginning()
         {
@@ -80,37 +90,50 @@ namespace FlatsAPI.Services
 
             var currentDate = DateTime.Now;
 
+            var title = new Paragraph()
+                .SetFontSize(24)
+                .Add("Flats of Blocks Inc.");
+
             var paragraphBase = new Paragraph()
-                .SetHorizontalAlignment(HorizontalAlignment.RIGHT);
+                .SetFont(DocumentSettings.SecondaryFont);
+            //var invoiceDate = currentDate.ToString(DateFormat);
+            //string dueDate = currentDate.AddDays(20).ToString(DateFormat);
 
-            var placeParagraph = paragraphBase.Add("Kielce");
+            //var credentials = paragraphBase
+            //    .Add("Kielce\n")
+            //    .Add($"{invoiceDate}\n")
+            //    .Add($"{dueDate}");
 
-            var invoiceDate = currentDate.ToString(DateFormat);
+            var credentials = paragraphBase
+                .Add("Przeskok 12A\n")
+                .Add("Kielce, Świętokrzyskie 25-813");
 
-            var invoiceDateParagraph = paragraphBase.Add(invoiceDate);
-
-            string dueDate = currentDate.AddDays(20).ToString(DateFormat);
-
-            var dueDateParagraph = paragraphBase.Add(dueDate);
-
-            header.Add(placeParagraph);
-            header.Add(invoiceDateParagraph);
-            header.Add(dueDateParagraph);
+            header
+                .Add(title)
+                .Add(credentials);
 
             return header;
         }
-        private Table GenerateBuyerSellerChapter(Account buyer)
+        private Table GenerateBuyerSellerInvoiceChapter(Account buyer)
         {
             var table = new Table(2)
                 .SetHorizontalAlignment(HorizontalAlignment.LEFT)
                 .SetWidth(UnitValue.CreatePercentValue(66));
 
-            var headerCellBase = new Cell(1, 1)
-                .SetBorder(Border.NO_BORDER)
-                .SetPadding(5);
+            var sellerParagraph = new Paragraph("Seller")
+                .SetPadding(0)
+                .SetBold();
 
-            var sellerCell = headerCellBase.Add(new Paragraph("Seller"));
-            var buyerCell = headerCellBase.Add(new Paragraph("Buyer"));
+            var buyerParagraph = new Paragraph("Buyer")
+                .SetPadding(0)
+                .SetBold();
+
+            var sellerCell = new Cell(1, 1)
+                .SetBorder(Border.NO_BORDER)
+                .Add(sellerParagraph);
+            var buyerCell = new Cell(1, 1)
+                .SetBorder(Border.NO_BORDER)
+                .Add(buyerParagraph);
 
             table
                 .AddHeaderCell(sellerCell)
@@ -123,76 +146,102 @@ namespace FlatsAPI.Services
         {
             var table = new Table(6, false)
                 .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
-                .SetWidth(UnitValue.CreatePercentValue(50));
+                .SetWidth(UnitValue.CreatePercentValue(100));
 
             var tableHeaderBase = new Cell(1, 1)
                 .SetTextAlignment(TextAlignment.CENTER);
 
-            var tableHeader1 = tableHeaderBase.Add(new Paragraph("In."));
+            var indexNo = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("In.").SetBold());
 
-            var tableHeader2 = tableHeaderBase.Add(new Paragraph("Service/product name"));
+            var serviceProductName = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("Service/product name").SetBold());
 
-            var tableHeader3 = tableHeaderBase.Add(new Paragraph("Netto price"));
+            var nettoPrice = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("Netto price").SetBold());
 
-            var tableHeader4 = tableHeaderBase.Add(new Paragraph("VAT"));
+            var vat = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("VAT").SetBold());
 
-            var tableHeader5 = tableHeaderBase.Add(new Paragraph("VAT rate"));
+            var vatRate = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("VAT rate").SetBold());
 
-            var tableHeader6 = tableHeaderBase.Add(new Paragraph("Price"));
+            var price = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("Price").SetBold());
 
             table
-                .AddHeaderCell(tableHeader1)
-                .AddHeaderCell(tableHeader2)
-                .AddHeaderCell(tableHeader3)
-                .AddHeaderCell(tableHeader4)
-                .AddHeaderCell(tableHeader5)
-                .AddHeaderCell(tableHeader6);
+                .AddHeaderCell(indexNo)
+                .AddHeaderCell(serviceProductName)
+                .AddHeaderCell(nettoPrice)
+                .AddHeaderCell(vat)
+                .AddHeaderCell(vatRate)
+                .AddHeaderCell(price);
 
             var index = 1;
 
             foreach (var rent in rents)
             {
                 // Index number add
-                table.AddCell($"{index++}.");
+                var indexNumberCell = new Cell(1, 1).SetTextAlignment(TextAlignment.RIGHT)
+                    .Add(new Paragraph($"{index++}."));
+                table.AddCell(indexNumberCell);
 
                 // Product/service name add
                 var property = rent.PropertyType == PropertyTypes.BlockOfFlats ? "Block of Flats" : "Flat";
-
+                var productServiceCell = new Cell(1, 1);
                 if (rent.PropertyType == PropertyTypes.BlockOfFlats)
                 {
                     var blockOfFlats = _dbContext.BlockOfFlats.FirstOrDefault(b => b.Id == rent.PropertyId);
 
                     var address = blockOfFlats.Address;
 
-                    table.AddCell($"{property} on {address}");
+                    productServiceCell.Add(new Paragraph($"{property} on {address}"));
+                    table.AddCell(productServiceCell);
                 }
                 else
                 {
-                    var flat = _dbContext.Flats.FirstOrDefault(f => f.Id == rent.PropertyId);
+                    var flat = _dbContext.Flats.Include(f => f.BlockOfFlats).FirstOrDefault(f => f.Id == rent.PropertyId);
 
                     var address = flat.BlockOfFlats.Address;
 
                     var number = flat.Number;
 
-                    table.AddCell($"{property} on {address} no. {number}");
+                    productServiceCell.Add(new Paragraph($"{property} on {address} no. {number}"));
+                    table.AddCell(productServiceCell);
                 }
 
                 // Netto price add
                 var formattedNettoPrice = rent.Price.ToString("C", CultureInfo.CurrentCulture);
-                table.AddCell(formattedNettoPrice);
+                var nettoCell = new Cell(1, 1)
+                    .SetTextAlignment(TextAlignment.RIGHT)
+                    .Add(new Paragraph(formattedNettoPrice));
+                table.AddCell(nettoCell);
 
                 // VAT percentage add
-                var percentage = (PaymentSettings.TAX - 1) * 100;
+                var percentage = Math.Round((PaymentSettings.TAX - 1) * 100);
                 var percentageCurrencyString = percentage.ToString();
-                table.AddCell($"{percentageCurrencyString}%");
+                var vatCell = new Cell(1, 1)
+                    .SetTextAlignment(TextAlignment.RIGHT)
+                    .Add(new Paragraph($"{percentageCurrencyString}%"));
+                table.AddCell(vatCell);
 
                 // VAT rate add
-                var rate = (rent.Price * percentage).ToString("C", CultureInfo.CurrentCulture);
-                table.AddCell(rate);
+                var rate = (rent.Price * (percentage / 100)).ToString("C", CultureInfo.CurrentCulture);
+                var vatRateCell = new Cell(1, 1).SetTextAlignment(TextAlignment.RIGHT)
+                    .Add(new Paragraph(rate));
+                table.AddCell(vatRateCell);
 
                 // Brutto price add
                 var bruttoPrice = rent.PriceWithTax.ToString("C", CultureInfo.CurrentCulture);
-                table.AddCell(bruttoPrice);
+                var bruttoCell = new Cell(1, 1).SetTextAlignment(TextAlignment.RIGHT)
+                    .Add(new Paragraph(bruttoPrice));
+                table.AddCell(bruttoCell);
             }
 
             return table;
@@ -201,18 +250,18 @@ namespace FlatsAPI.Services
         {
             var table = new Table(4, false)
                 .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
-                .SetWidth(UnitValue.CreatePercentValue(50));
+                .SetWidth(UnitValue.CreatePercentValue(66));
 
             var tableHeaderBase = new Cell(1, 1)
                 .SetTextAlignment(TextAlignment.CENTER);
 
-            var tableHeader1 = tableHeaderBase.Add(new Paragraph("Stawka VAT"));
+            var tableHeader1 = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Stawka VAT"));
 
-            var tableHeader2 = tableHeaderBase.Add(new Paragraph("Netto"));
+            var tableHeader2 = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Netto"));
 
-            var tableHeader3 = tableHeaderBase.Add(new Paragraph("VAT"));
+            var tableHeader3 = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("VAT"));
 
-            var tableHeader4 = tableHeaderBase.Add(new Paragraph("Brutto"));
+            var tableHeader4 = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Brutto"));
 
             table
                 .AddHeaderCell(tableHeader1)
@@ -221,7 +270,7 @@ namespace FlatsAPI.Services
                 .AddHeaderCell(tableHeader4);
 
             // VAT add
-            var percentage = (PaymentSettings.TAX - 1) * 100;
+            var percentage = Math.Round((PaymentSettings.TAX - 1) * 100);
             var percentageCurrencyString = percentage.ToString();
             table.AddCell($"{percentageCurrencyString}%");
 
