@@ -13,6 +13,7 @@ using FlatsAPI.Settings;
 using System.Globalization;
 using FlatsAPI.Models;
 using iText.Layout.Borders;
+using FlatsAPI.Exceptions;
 
 namespace FlatsAPI.Services
 {
@@ -32,9 +33,16 @@ namespace FlatsAPI.Services
 
         public byte[] GetInvoiceForSpecifiedAccount(int accountId)
         {
+            var account = _dbContext.Accounts.FirstOrDefault(a => a.Id == accountId);
+
+            if (account is null)
+                throw new NotFoundException("Account not found");
+
+            var document = GeneratePdf(account, out string fileName);
+
             throw new NotImplementedException();
         }
-        private Document GeneratePdf(Account account)
+        private Document GeneratePdf(Account account, out string fileName)
         {
             var accountRents = account.Rents;
 
@@ -59,6 +67,10 @@ namespace FlatsAPI.Services
                 .Add(buyerSellerChapter)
                 .Add(rentsTable)
                 .Add(summaryTable);
+
+            var generatedId = (int)new Random().Next();
+
+            fileName = $"invoice_{generatedId}_{account.FirstName}_{account.LastName}";
 
             return document;
         }
