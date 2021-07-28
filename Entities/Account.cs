@@ -17,6 +17,8 @@ namespace FlatsAPI.Entities
         [Required]
         [Column("Username")]
         public string Username { get; set; }
+
+        // Account personal data
         [Required]
         [Column("FirstName")]
         public string FirstName { get; set; }
@@ -24,11 +26,18 @@ namespace FlatsAPI.Entities
         [Column("LastName")]
         public string LastName { get; set; }
         [Required]
-        [Column("Password")]
-        public string Password { get; set; }
-        [Required]
         [Column("DateOfBirth")]
         public DateTime DateOfBirth { get; set; }
+
+        [Required]
+        [Column("Password")]
+        public string Password { get; set; }
+
+        // Billing information
+        [Column("BillingAddress")]
+        public string BillingAddress { get; set; }
+        [Column("PhoneNumber")]
+        public string PhoneNumber { get; set; }
 
         [Required]
         [Column("RoleId")]
