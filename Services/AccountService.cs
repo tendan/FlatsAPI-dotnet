@@ -56,6 +56,8 @@ namespace FlatsAPI.Services
         {
             var account = _mapper.Map<Account>(dto);
 
+            account.RoleId = dto.RoleId ?? _dbContext.Roles.FirstOrDefault(r => r.Name == TenantRole.Name).Id;
+
             var hashedPassword = _passwordHasher.HashPassword(account, dto.Password);
 
             account.Password = hashedPassword;
