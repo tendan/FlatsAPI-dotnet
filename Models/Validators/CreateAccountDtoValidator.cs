@@ -4,6 +4,7 @@ using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace FlatsAPI.Models.Validators
@@ -34,6 +35,9 @@ namespace FlatsAPI.Models.Validators
 
             RuleFor(a => a.ConfirmPassword)
                 .Equal(e => e.Password);
+
+            RuleFor(a => a.PhoneNumber)
+                .PhoneNumber();
 
             RuleFor(a => a.RoleId)
                 .NotEqual(dbContext.Roles.FirstOrDefault(r => r.Name == AdminRole.Name).Id)
