@@ -98,12 +98,7 @@ namespace FlatsAPI
             services.AddScoped<IValidator<CreateAccountDto>, CreateAccountDtoValidator>();
 
             // Services
-            services.AddScoped<IUserContextService, UserContextService>();
-            services.AddScoped<IBlockOfFlatsService, BlockOfFlatsService>();
-            services.AddScoped<IFlatService, FlatService>();
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IInvoiceService, InvoiceService>();
-            services.AddTransient<IRentService, RentService>();
+            services.AddServices();
 
             // Hosted services
             services.AddHostedService<RentHostedService>();
