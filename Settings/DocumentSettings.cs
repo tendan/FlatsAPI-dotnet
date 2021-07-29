@@ -3,6 +3,7 @@ using iText.IO.Font.Constants;
 using iText.Kernel.Font;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,7 +12,9 @@ namespace FlatsAPI.Settings
 {
     public class DocumentSettings
     {
-        public static PdfFont PrimaryFont { get; } = PdfFontFactory.CreateFont(StandardFonts.HELVETICA, PdfEncodings.UTF8);
-        public static PdfFont SecondaryFont { get; } = PdfFontFactory.CreateFont(StandardFonts.HELVETICA, PdfEncodings.UTF8);
+        private static string CurrentDirectory = Directory.GetCurrentDirectory();
+        private static string LiberationSansFontPath = CurrentDirectory + @"\Static\Fonts\LiberationSans.ttf";
+        public static PdfFont PrimaryFont { get; } = PdfFontFactory.CreateFont(LiberationSansFontPath, PdfEncodings.IDENTITY_H);
+        public static PdfFont SecondaryFont { get; } = PdfFontFactory.CreateFont(LiberationSansFontPath, PdfEncodings.IDENTITY_H);
     }
 }
