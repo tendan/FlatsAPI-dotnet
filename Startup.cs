@@ -69,8 +69,6 @@ namespace FlatsAPI
             });
 
             // Authorization config
-
-            services.AddTransient<IPermissionContext, PermissionContext>();
             services.AddAuthorization();
 
             services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();

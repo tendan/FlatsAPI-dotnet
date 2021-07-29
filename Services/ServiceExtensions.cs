@@ -10,6 +10,7 @@ namespace FlatsAPI.Services
     {
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
+            services.AddTransient<IPermissionContext, PermissionContext>();
             services.AddScoped<IUserContextService, UserContextService>();
             services.AddScoped<IBlockOfFlatsService, BlockOfFlatsService>();
             services.AddScoped<IFlatService, FlatService>();
