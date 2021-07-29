@@ -39,6 +39,9 @@ namespace FlatsAPI.Services
             if (account is null)
                 throw new NotFoundException("Account not found");
 
+            if (account.BillingAddress is null)
+                throw new ForbiddenException("Billing address is missing");
+
             var document = GeneratePdf(account, out string fileName);
 
             var fileContents = document.ToArray();
@@ -62,9 +65,10 @@ namespace FlatsAPI.Services
             using var document = new Document(pdf)
                 .SetFont(DocumentSettings.SecondaryFont)
                 .SetFontSize(12);
-
+            
             var beginning = GenerateBeginning();
             var buyerSellerChapter = GenerateBuyerSellerInvoiceChapter(account);
+            
             var rentsTable = GenerateRentsTable(accountRents);
 
             var nettoAndVat = CalculateSummaryOfNettoAndVat(accountRents);
@@ -73,7 +77,7 @@ namespace FlatsAPI.Services
             var vatSummary = nettoAndVat.VatSummary;
 
             var summaryTable = GenerateSummaryTable(nettoSummary, vatSummary);
-
+            
             document
                 .Add(beginning)
                 .Add(buyerSellerChapter)
@@ -139,6 +143,21 @@ namespace FlatsAPI.Services
             table
                 .AddHeaderCell(sellerCell)
                 .AddHeaderCell(buyerCell);
+
+            var sellerCredentials = new Cell(1, 1)
+                .Add(new Paragraph("Flats of Blocks Inc."))
+                .Add(new Paragraph("Przeskok 12A"))
+                .Add(new Paragraph("Kielce, Świętokrzyskie 25-813"));
+
+            string billingAddress = buyer.BillingAddress;
+
+            var buyerCredentials = new Cell(1, 1)
+                .Add(new Paragraph($"{buyer.FirstName} {buyer.LastName}"))
+                .Add(new Paragraph(billingAddress));
+
+            table
+                .AddCell(sellerCredentials)
+                .AddCell(buyerCredentials);
 
             return table;
             
