@@ -59,7 +59,9 @@ namespace FlatsAPI.Services
             using var stream = new MemoryStream();
             using var writer = new PdfWriter(stream);
             using var pdf = new PdfDocument(writer);
-            using var document = new Document(pdf);
+            using var document = new Document(pdf)
+                .SetFont(DocumentSettings.SecondaryFont)
+                .SetFontSize(12);
 
             var beginning = GenerateBeginning();
             var buyerSellerChapter = GenerateBuyerSellerInvoiceChapter(account);
@@ -80,7 +82,7 @@ namespace FlatsAPI.Services
 
             var generatedId = new Random().Next();
 
-            fileName = $"invoice_{generatedId}_{account.FirstName}_{account.LastName}";
+            fileName = $"invoice_{generatedId}";
 
             return stream;
         }
@@ -94,8 +96,7 @@ namespace FlatsAPI.Services
                 .SetFontSize(24)
                 .Add("Flats of Blocks Inc.");
 
-            var paragraphBase = new Paragraph()
-                .SetFont(DocumentSettings.SecondaryFont);
+            var paragraphBase = new Paragraph();
             //var invoiceDate = currentDate.ToString(DateFormat);
             //string dueDate = currentDate.AddDays(20).ToString(DateFormat);
 
@@ -233,13 +234,15 @@ namespace FlatsAPI.Services
 
                 // VAT rate add
                 var rate = (rent.Price * (percentage / 100)).ToString("C", CultureInfo.CurrentCulture);
-                var vatRateCell = new Cell(1, 1).SetTextAlignment(TextAlignment.RIGHT)
+                var vatRateCell = new Cell(1, 1)
+                    .SetTextAlignment(TextAlignment.RIGHT)
                     .Add(new Paragraph(rate));
                 table.AddCell(vatRateCell);
 
                 // Brutto price add
                 var bruttoPrice = rent.PriceWithTax.ToString("C", CultureInfo.CurrentCulture);
-                var bruttoCell = new Cell(1, 1).SetTextAlignment(TextAlignment.RIGHT)
+                var bruttoCell = new Cell(1, 1)
+                    .SetTextAlignment(TextAlignment.RIGHT)
                     .Add(new Paragraph(bruttoPrice));
                 table.AddCell(bruttoCell);
             }
@@ -272,19 +275,27 @@ namespace FlatsAPI.Services
             // VAT add
             var percentage = Math.Round((PaymentSettings.TAX - 1) * 100);
             var percentageCurrencyString = percentage.ToString();
-            table.AddCell($"{percentageCurrencyString}%");
+            table
+                .AddCell($"{percentageCurrencyString}%")
+                .SetTextAlignment(TextAlignment.RIGHT);
 
             // Netto summary add
             var nettoSummaryCurrencyString = nettoSummary.ToString("C", CultureInfo.CurrentCulture);
-            table.AddCell(nettoSummaryCurrencyString);
+            table
+                .AddCell(nettoSummaryCurrencyString)
+                .SetTextAlignment(TextAlignment.RIGHT); ;
 
             // VAT summary add
             var vatSummaryCurrencyString = vatSummary.ToString("C", CultureInfo.CurrentCulture);
-            table.AddCell(vatSummaryCurrencyString);
+            table
+                .AddCell(vatSummaryCurrencyString)
+                .SetTextAlignment(TextAlignment.RIGHT); ;
 
             // Brutto add
             var brutto = (nettoSummary + vatSummary).ToString("C", CultureInfo.CurrentCulture);
-            table.AddCell(brutto);
+            table
+                .AddCell(brutto)
+                .SetTextAlignment(TextAlignment.RIGHT); ;
 
             return table;
         }
