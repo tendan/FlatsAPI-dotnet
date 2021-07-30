@@ -170,6 +170,7 @@ namespace FlatsAPI.Services
         private Table GenerateRentsTable(ICollection<Rent> rents)
         {
             var table = new Table(6, false)
+                .SetMarginTop(10)
                 .SetHorizontalAlignment(HorizontalAlignment.RIGHT)
                 .SetWidth(UnitValue.CreatePercentValue(100));
 
