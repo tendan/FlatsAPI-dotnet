@@ -24,6 +24,7 @@ namespace FlatsAPI.Services
         int Create(CreateAccountDto dto);
         string GenerateJwt(LoginDto dto);
         AccountDto GetByEmail(string email);
+        AccountDto GetAccountInfo();
         void Update(int accountId, UpdateAccountDto dto);
         PagedResult<RentDto> GetRentsByEmail(SearchQuery query, string email);
         void DeleteById(int id);
@@ -75,12 +76,7 @@ namespace FlatsAPI.Services
             if (account is null)
                 throw new NotFoundException("Account not found");
 
-            var userId = (int)_userContextService.GetUserId;
-
-            var isAllowedToDeleteOthersAccounts = _permissionContext.IsPermittedToPerformAction(AccountPermissions.DeleteOthers, userId);
-
-            if (id != userId && !isAllowedToDeleteOthersAccounts)
-                throw new ForbiddenException("You are not permitted to perform this action");
+            _userContextService.AuthorizeAccess(id, AccountPermissions.DeleteOthers);
 
             _dbContext.Accounts.Remove(account);
             _dbContext.SaveChanges();
@@ -140,12 +136,7 @@ namespace FlatsAPI.Services
             if (account is null)
                 throw new NotFoundException("Account not found");
 
-            var userId = (int)_userContextService.GetUserId;
-
-            var isAllowedToDeleteOthersAccounts = _permissionContext.IsPermittedToPerformAction(AccountPermissions.UpdateOthers, userId);
-
-            if (accountId != userId && !isAllowedToDeleteOthersAccounts)
-                throw new ForbiddenException("You are not permitted to perform this action");
+            _userContextService.AuthorizeAccess(accountId, AccountPermissions.UpdateOthers);
 
             account.Email = dto.Email ?? account.Email;
             account.Username = dto.Username ?? account.Username;
@@ -198,6 +189,20 @@ namespace FlatsAPI.Services
             var result = new PagedResult<RentDto>(rentsDtos, totalItemsCount, query.PageSize, query.PageNumber);
 
             return result;
+        }
+
+        public AccountDto GetAccountInfo()
+        {
+            var userId = (int)_userContextService.GetUserId;
+
+            var account = _dbContext.Accounts.FirstOrDefault(a => a.Id == userId);
+
+            if (account is null)
+                throw new NotFoundException("Account not found");
+
+            var accountDto = _mapper.Map<AccountDto>(account);
+
+            return accountDto;
         }
     }
 }
