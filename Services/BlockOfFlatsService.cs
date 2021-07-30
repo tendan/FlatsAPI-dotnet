@@ -67,13 +67,6 @@ namespace FlatsAPI.Services
             if (blockOfFlats is null)
                 throw new NotFoundException("Block of flats not found");
 
-            /*var userId = (int)_userContextService.GetUserId;
-
-            var isAllowedToDeleteOthersBlocks = _permissionContext.IsPermittedToPerformAction(BlockOfFlatsPermissions.DeleteOthers, userId);
-
-            if (blockOfFlats.OwnerId != userId && !isAllowedToDeleteOthersBlocks)
-                throw new ForbiddenException("You are not permitted to perform this action");*/
-
             _userContextService.AuthorizeAccess(blockOfFlats.OwnerId, BlockOfFlatsPermissions.DeleteOthers);
 
             _dbContext.BlockOfFlats.Remove(blockOfFlats);

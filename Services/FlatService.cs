@@ -52,13 +52,6 @@ namespace FlatsAPI.Services
             if (potentialTenant is null)
                 throw new NotFoundException("Account not found");
 
-            /*var userId = (int)_userContextService.GetUserId;
-
-            var isAllowedToAddTenantWithoutOwnership = _permissionContext.IsPermittedToPerformAction(FlatPermissions.ApplyTenantOthers, userId);
-
-            if (flat.OwnerId != userId && !isAllowedToAddTenantWithoutOwnership)
-                throw new ForbiddenException("You are not permitted to perform this action");*/
-
             _userContextService.AuthorizeAccess(flat.OwnerId, FlatPermissions.ApplyTenantOthers);
 
             flat.Tenants.Add(potentialTenant);
@@ -78,13 +71,6 @@ namespace FlatsAPI.Services
             if (potentialOwner is null)
                 throw new NotFoundException("Account not found");
 
-            /*var userId = (int)_userContextService.GetUserId;
-
-            var isAllowedToApplyOwnerToOthers = _permissionContext.IsPermittedToPerformAction(FlatPermissions.ApplyOwner, userId);
-
-            if (flat.OwnerId != userId && !isAllowedToApplyOwnerToOthers)
-                throw new ForbiddenException("You are not permitted to perform this action");*/
-
             _userContextService.AuthorizeAccess(flat.OwnerId, FlatPermissions.ApplyOwner);
 
             flat.Owner = potentialOwner;
@@ -102,11 +88,6 @@ namespace FlatsAPI.Services
                 throw new NotFoundException("Block of flats not found");
 
             var userId = (int)_userContextService.GetUserId;
-
-            /*var isAllowedToAddNewFlatToSpecifiedBlock = _permissionContext.IsPermittedToPerformAction(BlockOfFlatsPermissions.UpdateOthers, userId);
-
-            if (blockOfFlats.OwnerId != userId && !isAllowedToAddNewFlatToSpecifiedBlock)
-                throw new ForbiddenException("You are not permitted to perform this action");*/
 
             _userContextService.AuthorizeAccess(blockOfFlats.OwnerId, BlockOfFlatsPermissions.UpdateOthers);
 
@@ -131,13 +112,6 @@ namespace FlatsAPI.Services
 
             if (flat is null)
                 throw new NotFoundException("Flat not found");
-
-            /*var userId = (int)_userContextService.GetUserId;
-
-            var isAllowedToDeleteOthersFlats = _permissionContext.IsPermittedToPerformAction(FlatPermissions.DeleteOthers, userId);
-
-            if (flat.OwnerId != userId && !isAllowedToDeleteOthersFlats)
-                throw new ForbiddenException("You are not permitted to perform this action");*/
 
             _userContextService.AuthorizeAccess(flat.OwnerId, FlatPermissions.DeleteOthers);
 
