@@ -195,7 +195,7 @@ namespace FlatsAPI.Services
         {
             var userId = (int)_userContextService.GetUserId;
 
-            var account = _dbContext.Accounts.FirstOrDefault(a => a.Id == userId);
+            var account = _dbContext.Accounts.Include(a => a.Role).FirstOrDefault(a => a.Id == userId);
 
             if (account is null)
                 throw new NotFoundException("Account not found");
