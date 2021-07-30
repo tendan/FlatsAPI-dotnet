@@ -34,13 +34,16 @@ namespace FlatsAPI.Services
 
         public Invoice GetInvoiceForSpecifiedAccount(int accountId)
         {
-            var account = _dbContext.Accounts.FirstOrDefault(a => a.Id == accountId);
+            var account = _dbContext.Accounts.Include(a => a.Rents).FirstOrDefault(a => a.Id == accountId);
 
             if (account is null)
                 throw new NotFoundException("Account not found");
 
             if (account.BillingAddress is null)
                 throw new ForbiddenException("Billing address is missing");
+
+            if (!account.Rents.Any())
+                throw new BadRequestException("No rents were found");
 
             var document = GeneratePdf(account, out string fileName);
 
@@ -57,7 +60,7 @@ namespace FlatsAPI.Services
         }
         private MemoryStream GeneratePdf(Account account, out string fileName)
         {
-            var accountRents = _dbContext.Rents.Where(r => r.RentIssuer == account && !r.Paid).ToList();
+            var accountRents = account.Rents;
 
             using var stream = new MemoryStream();
             using var writer = new PdfWriter(stream);
