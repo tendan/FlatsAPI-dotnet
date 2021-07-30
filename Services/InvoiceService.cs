@@ -137,17 +137,18 @@ namespace FlatsAPI.Services
                 .SetBold();
 
             var sellerCell = new Cell(1, 1)
-                .SetBorder(Border.NO_BORDER)
-                .Add(sellerParagraph);
+                .Add(sellerParagraph)
+                .SetBorder(Border.NO_BORDER);
             var buyerCell = new Cell(1, 1)
-                .SetBorder(Border.NO_BORDER)
-                .Add(buyerParagraph);
+                .Add(buyerParagraph)
+                .SetBorder(Border.NO_BORDER);
 
             table
                 .AddHeaderCell(sellerCell)
                 .AddHeaderCell(buyerCell);
 
             var sellerCredentials = new Cell(1, 1)
+                .SetBorder(Border.NO_BORDER)
                 .Add(new Paragraph("Flats of Blocks Inc."))
                 .Add(new Paragraph("Przeskok 12A"))
                 .Add(new Paragraph("Kielce, Świętokrzyskie 25-813"));
@@ -155,6 +156,7 @@ namespace FlatsAPI.Services
             string billingAddress = buyer.BillingAddress;
 
             var buyerCredentials = new Cell(1, 1)
+                .SetBorder(Border.NO_BORDER)
                 .Add(new Paragraph($"{buyer.FirstName} {buyer.LastName}"))
                 .Add(new Paragraph(billingAddress));
 
