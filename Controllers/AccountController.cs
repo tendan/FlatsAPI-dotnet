@@ -21,7 +21,7 @@ namespace FlatsAPI.Controllers
             _accountService = accountService;
         }
         [HttpPost("register")]
-        public ActionResult CreateAccount([FromBody]CreateAccountDto createAccountDto)
+        public ActionResult CreateAccount([FromBody] CreateAccountDto createAccountDto)
         {
             var account = _accountService.Create(createAccountDto);
 
@@ -29,9 +29,15 @@ namespace FlatsAPI.Controllers
         }
 
         [HttpPost("login")]
-        public ActionResult<string> Login([FromBody]LoginDto loginDto)
+        public ActionResult<string> Login([FromBody] LoginDto loginDto)
         {
             return Ok(_accountService.GenerateJwt(loginDto));
+        }
+        [HttpGet("user")]
+        [Authorize]
+        public ActionResult GetAccountInfo()
+        {
+            return Ok(_accountService.GetAccountInfo());
         }
 
         [HttpGet("user/{email}")]
