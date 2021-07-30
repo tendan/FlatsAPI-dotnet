@@ -44,6 +44,14 @@ namespace FlatsAPI.Controllers
         {
             return Ok(_accountService.GetRentsByEmail(query, email));
         }
+        [HttpPatch("user/{id}")]
+        [Authorize]
+        public ActionResult UpdateAccountInfo([FromRoute]int id, [FromBody]UpdateAccountDto dto)
+        {
+            _accountService.Update(id, dto);
+
+            return NoContent();
+        }
         [HttpDelete("user/{id}")]
         [Authorize]
         public ActionResult DeleteUserById([FromRoute]int id)

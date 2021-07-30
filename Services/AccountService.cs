@@ -24,6 +24,7 @@ namespace FlatsAPI.Services
         int Create(CreateAccountDto dto);
         string GenerateJwt(LoginDto dto);
         AccountDto GetByEmail(string email);
+        void Update(int accountId, UpdateAccountDto dto);
         PagedResult<RentDto> GetRentsByEmail(SearchQuery query, string email);
         void DeleteById(int id);
     }
@@ -130,6 +131,32 @@ namespace FlatsAPI.Services
 
             var result = _mapper.Map<AccountDto>(account);
             return result;
+        }
+
+        public void Update(int accountId, UpdateAccountDto dto)
+        {
+            var account = _dbContext.Accounts.FirstOrDefault(a => a.Id == accountId);
+
+            if (account is null)
+                throw new NotFoundException("Account not found");
+
+            var userId = (int)_userContextService.GetUserId;
+
+            var isAllowedToDeleteOthersAccounts = _permissionContext.IsPermittedToPerformAction(AccountPermissions.UpdateOthers, userId);
+
+            if (accountId != userId && !isAllowedToDeleteOthersAccounts)
+                throw new ForbiddenException("You are not permitted to perform this action");
+
+            account.Email = dto.Email ?? account.Email;
+            account.Username = dto.Username ?? account.Username;
+            account.Password = dto.Password ?? account.Password;
+            account.FirstName = dto.FirstName ?? account.FirstName;
+            account.LastName = dto.LastName ?? account.LastName;
+            account.BillingAddress = dto.BillingAddress ?? account.BillingAddress;
+            account.PhoneNumber = dto.PhoneNumber ?? account.PhoneNumber;
+
+            _dbContext.Update(account);
+            _dbContext.SaveChanges();
         }
 
         public PagedResult<RentDto> GetRentsByEmail(SearchQuery query, string email)

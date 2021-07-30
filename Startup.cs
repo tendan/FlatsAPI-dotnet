@@ -92,6 +92,7 @@ namespace FlatsAPI
 
             // Validators
             services.AddScoped<IValidator<CreateAccountDto>, CreateAccountDtoValidator>();
+            services.AddScoped<IValidator<UpdateAccountDto>, UpdateAccountDtoValidator>();
 
             // Services
             services.AddServices();
