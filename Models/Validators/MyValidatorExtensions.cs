@@ -1,5 +1,6 @@
 ﻿using FlatsAPI.Models.Validators.PropertyValidators;
 using FluentValidation;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,14 @@ namespace FlatsAPI.Models.Validators
         public static IRuleBuilderOptions<T, TElement> PhoneNumber<T, TElement>(this IRuleBuilder<T, TElement> ruleBuilder)
         {
             return ruleBuilder.SetValidator(new PhoneNumberValidator<T, TElement>());
+        }
+
+        public static IServiceCollection AddValidators(this IServiceCollection services)
+        {
+            services.AddScoped<IValidator<CreateAccountDto>, CreateAccountDtoValidator>();
+            services.AddScoped<IValidator<UpdateAccountDto>, UpdateAccountDtoValidator>();
+
+            return services;
         }
     }
 }

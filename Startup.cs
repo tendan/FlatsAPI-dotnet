@@ -91,8 +91,7 @@ namespace FlatsAPI
             services.AddScoped<IPasswordHasher<Account>, PasswordHasher<Account>>();
 
             // Validators
-            services.AddScoped<IValidator<CreateAccountDto>, CreateAccountDtoValidator>();
-            services.AddScoped<IValidator<UpdateAccountDto>, UpdateAccountDtoValidator>();
+            services.AddValidators();
 
             // Services
             services.AddServices();
