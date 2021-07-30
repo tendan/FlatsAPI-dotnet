@@ -33,6 +33,6 @@ namespace FlatsAPI.Models.Validators.PropertyValidators
             return true;
         }
         protected override string GetDefaultMessageTemplate(string errorCode)
-        => "{PropertyName} must be a phone number";
+        => "Must be a phone number";
     }
 }
