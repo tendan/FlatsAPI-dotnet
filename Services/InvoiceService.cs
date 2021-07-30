@@ -1,5 +1,4 @@
 ﻿using FlatsAPI.Entities;
-using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Layout;
 using iText.Layout.Properties;
@@ -8,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using FlatsAPI.Settings;
 using System.Globalization;
 using FlatsAPI.Models;
@@ -178,26 +176,32 @@ namespace FlatsAPI.Services
                 .SetTextAlignment(TextAlignment.CENTER);
 
             var indexNo = new Cell(1, 1)
+                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .Add(new Paragraph("In.").SetBold());
 
             var serviceProductName = new Cell(1, 1)
+                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .Add(new Paragraph("Service/product name").SetBold());
 
             var nettoPrice = new Cell(1, 1)
+                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .Add(new Paragraph("Netto price").SetBold());
 
             var vat = new Cell(1, 1)
+                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .Add(new Paragraph("VAT").SetBold());
 
             var vatRate = new Cell(1, 1)
+                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .Add(new Paragraph("VAT rate").SetBold());
 
             var price = new Cell(1, 1)
+                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
                 .SetTextAlignment(TextAlignment.CENTER)
                 .Add(new Paragraph("Price").SetBold());
 
@@ -289,7 +293,11 @@ namespace FlatsAPI.Services
 
             var tableHeader3 = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("VAT"));
 
-            var tableHeader4 = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Brutto"));
+            var tableHeader4 = new Cell(1, 1)
+                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
+                .SetBold()
+                .SetTextAlignment(TextAlignment.CENTER)
+                .Add(new Paragraph("Brutto"));
 
             table
                 .AddHeaderCell(tableHeader1)
@@ -308,19 +316,24 @@ namespace FlatsAPI.Services
             var nettoSummaryCurrencyString = nettoSummary.ToString("C", CultureInfo.CurrentCulture);
             table
                 .AddCell(nettoSummaryCurrencyString)
-                .SetTextAlignment(TextAlignment.RIGHT); ;
+                .SetTextAlignment(TextAlignment.RIGHT);
 
             // VAT summary add
             var vatSummaryCurrencyString = vatSummary.ToString("C", CultureInfo.CurrentCulture);
             table
                 .AddCell(vatSummaryCurrencyString)
-                .SetTextAlignment(TextAlignment.RIGHT); ;
+                .SetTextAlignment(TextAlignment.RIGHT);
 
             // Brutto add
             var brutto = (nettoSummary + vatSummary).ToString("C", CultureInfo.CurrentCulture);
+            var bruttoCell = new Cell(1, 1)
+                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
+                .SetBold()
+                .Add(new Paragraph(brutto));
+
             table
-                .AddCell(brutto)
-                .SetTextAlignment(TextAlignment.RIGHT); ;
+                .AddCell(bruttoCell)
+                .SetTextAlignment(TextAlignment.RIGHT);
 
             return table;
         }
