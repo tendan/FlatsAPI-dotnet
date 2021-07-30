@@ -14,24 +14,30 @@ namespace FlatsAPI.Models.Validators
         public CreateAccountDtoValidator(FlatsDbContext dbContext)
         {
             RuleFor(a => a.Email)
+                .Cascade(CascadeMode.Stop)
                 .NotEmpty()
                 .EmailAddress();
 
             RuleFor(a => a.Username)
+                .Cascade(CascadeMode.Stop)
                 .NotEmpty()
                 .MinimumLength(6)
                 .MaximumLength(30);
 
             RuleFor(a => a.FirstName)
-                .NotEmpty();
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty()
+                .Length(2, 50);
 
             RuleFor(a => a.LastName)
-                .NotEmpty();
+                .Cascade(CascadeMode.Stop)
+                .NotEmpty()
+                .Length(2, 50);
 
             RuleFor(a => a.Password)
+                .Cascade(CascadeMode.Stop)
                 .NotEmpty()
-                .MinimumLength(8)
-                .MaximumLength(50);
+                .Length(8, 50);
 
             RuleFor(a => a.ConfirmPassword)
                 .Equal(e => e.Password);
