@@ -21,8 +21,7 @@ namespace FlatsAPI.Models.Validators
             RuleFor(a => a.Username)
                 .Cascade(CascadeMode.Stop)
                 .NotEmpty()
-                .MinimumLength(6)
-                .MaximumLength(30);
+                .Length(6, 30);
 
             RuleFor(a => a.FirstName)
                 .Cascade(CascadeMode.Stop)
