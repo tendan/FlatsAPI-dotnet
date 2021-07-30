@@ -75,9 +75,7 @@ namespace FlatsAPI
             services.AddScoped<IAuthorizationHandler, PermissionRequirementHandler>();
 
             // Roles
-            services.AddSingleton<IRole, AdminRole>();
-            services.AddSingleton<IRole, LandlordRole>();
-            services.AddSingleton<IRole, TenantRole>();
+            services.AddRolesSingletons();
 
             services.AddControllers().AddFluentValidation();
             services.AddDbContext<FlatsDbContext>();
