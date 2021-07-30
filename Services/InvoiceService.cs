@@ -126,35 +126,35 @@ namespace FlatsAPI.Services
                 .SetHorizontalAlignment(HorizontalAlignment.LEFT)
                 .SetWidth(UnitValue.CreatePercentValue(66));
 
-            var sellerParagraph = new Paragraph("Seller")
-                .SetPadding(0)
+            var noBorderCell = new Cell(1, 1)
+                .SetBorder(Border.NO_BORDER);
+
+            var headerCellBase = noBorderCell
+                .Clone(false)
                 .SetBold();
 
-            var buyerParagraph = new Paragraph("Buyer")
-                .SetPadding(0)
-                .SetBold();
+            var sellerCell = headerCellBase
+                .Clone(false)
+                .Add(new Paragraph("Seller"));
 
-            var sellerCell = new Cell(1, 1)
-                .Add(sellerParagraph)
-                .SetBorder(Border.NO_BORDER);
-            var buyerCell = new Cell(1, 1)
-                .Add(buyerParagraph)
-                .SetBorder(Border.NO_BORDER);
+            var buyerCell = headerCellBase
+                .Clone(false)
+                .Add(new Paragraph("Buyer"));
 
             table
                 .AddHeaderCell(sellerCell)
                 .AddHeaderCell(buyerCell);
 
-            var sellerCredentials = new Cell(1, 1)
-                .SetBorder(Border.NO_BORDER)
+            var sellerCredentials = noBorderCell
+                .Clone(false)
                 .Add(new Paragraph("Flats of Blocks Inc."))
                 .Add(new Paragraph("Przeskok 12A"))
                 .Add(new Paragraph("Kielce, Świętokrzyskie 25-813"));
 
             string billingAddress = buyer.BillingAddress;
 
-            var buyerCredentials = new Cell(1, 1)
-                .SetBorder(Border.NO_BORDER)
+            var buyerCredentials = noBorderCell
+                .Clone(false)
                 .Add(new Paragraph($"{buyer.FirstName} {buyer.LastName}"))
                 .Add(new Paragraph(billingAddress));
 
@@ -173,36 +173,31 @@ namespace FlatsAPI.Services
                 .SetWidth(UnitValue.CreatePercentValue(100));
 
             var tableHeaderBase = new Cell(1, 1)
+                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
                 .SetTextAlignment(TextAlignment.CENTER);
 
-            var indexNo = new Cell(1, 1)
-                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
-                .SetTextAlignment(TextAlignment.CENTER)
+            var indexNo = tableHeaderBase
+                .Clone(false)
                 .Add(new Paragraph("In.").SetBold());
 
-            var serviceProductName = new Cell(1, 1)
-                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
-                .SetTextAlignment(TextAlignment.CENTER)
+            var serviceProductName = tableHeaderBase
+                .Clone(false)
                 .Add(new Paragraph("Service/product name").SetBold());
 
-            var nettoPrice = new Cell(1, 1)
-                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
-                .SetTextAlignment(TextAlignment.CENTER)
+            var nettoPrice = tableHeaderBase
+                .Clone(false)
                 .Add(new Paragraph("Netto price").SetBold());
 
-            var vat = new Cell(1, 1)
-                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
-                .SetTextAlignment(TextAlignment.CENTER)
+            var vat = tableHeaderBase
+                .Clone(false)
                 .Add(new Paragraph("VAT").SetBold());
 
-            var vatRate = new Cell(1, 1)
-                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
-                .SetTextAlignment(TextAlignment.CENTER)
+            var vatRate = tableHeaderBase
+                .Clone(false)
                 .Add(new Paragraph("VAT rate").SetBold());
 
-            var price = new Cell(1, 1)
-                .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
-                .SetTextAlignment(TextAlignment.CENTER)
+            var price = tableHeaderBase
+                .Clone(false)
                 .Add(new Paragraph("Price").SetBold());
 
             table
@@ -215,10 +210,14 @@ namespace FlatsAPI.Services
 
             var index = 1;
 
+            var alignedRightCell = new Cell(1, 1)
+                .SetTextAlignment(TextAlignment.RIGHT);
+
             foreach (var rent in rents)
             {
                 // Index number add
-                var indexNumberCell = new Cell(1, 1).SetTextAlignment(TextAlignment.RIGHT)
+                var indexNumberCell = alignedRightCell
+                    .Clone(false)
                     .Add(new Paragraph($"{index++}."));
                 table.AddCell(indexNumberCell);
 
@@ -248,30 +247,30 @@ namespace FlatsAPI.Services
 
                 // Netto price add
                 var formattedNettoPrice = rent.Price.ToString("C", CultureInfo.CurrentCulture);
-                var nettoCell = new Cell(1, 1)
-                    .SetTextAlignment(TextAlignment.RIGHT)
+                var nettoCell = alignedRightCell
+                    .Clone(false)
                     .Add(new Paragraph(formattedNettoPrice));
                 table.AddCell(nettoCell);
 
                 // VAT percentage add
                 var percentage = Math.Round((PaymentSettings.TAX - 1) * 100);
                 var percentageCurrencyString = percentage.ToString();
-                var vatCell = new Cell(1, 1)
-                    .SetTextAlignment(TextAlignment.RIGHT)
+                var vatCell = alignedRightCell
+                    .Clone(false)
                     .Add(new Paragraph($"{percentageCurrencyString}%"));
                 table.AddCell(vatCell);
 
                 // VAT rate add
                 var rate = (rent.Price * (percentage / 100)).ToString("C", CultureInfo.CurrentCulture);
-                var vatRateCell = new Cell(1, 1)
-                    .SetTextAlignment(TextAlignment.RIGHT)
+                var vatRateCell = alignedRightCell
+                    .Clone(false)
                     .Add(new Paragraph(rate));
                 table.AddCell(vatRateCell);
 
                 // Brutto price add
                 var bruttoPrice = rent.PriceWithTax.ToString("C", CultureInfo.CurrentCulture);
-                var bruttoCell = new Cell(1, 1)
-                    .SetTextAlignment(TextAlignment.RIGHT)
+                var bruttoCell = alignedRightCell
+                    .Clone(false)
                     .Add(new Paragraph(bruttoPrice));
                 table.AddCell(bruttoCell);
             }
@@ -287,11 +286,17 @@ namespace FlatsAPI.Services
             var tableHeaderBase = new Cell(1, 1)
                 .SetTextAlignment(TextAlignment.CENTER);
 
-            var tableHeader1 = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Stawka VAT"));
+            var tableHeader1 = tableHeaderBase
+                .Clone(false)
+                .Add(new Paragraph("Stawka VAT"));
 
-            var tableHeader2 = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("Netto"));
+            var tableHeader2 = tableHeaderBase
+                .Clone(false)
+                .Add(new Paragraph("Netto"));
 
-            var tableHeader3 = new Cell(1, 1).SetTextAlignment(TextAlignment.CENTER).Add(new Paragraph("VAT"));
+            var tableHeader3 = tableHeaderBase
+                .Clone(false)
+                .Add(new Paragraph("VAT"));
 
             var tableHeader4 = new Cell(1, 1)
                 .SetBackgroundColor(DocumentSettings.TableHeaderCellColor)
