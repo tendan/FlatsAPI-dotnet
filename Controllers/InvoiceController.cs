@@ -1,4 +1,5 @@
 ﻿using FlatsAPI.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,7 @@ namespace FlatsAPI.Controllers
             _invoiceService = invoiceService;
         }
         [HttpGet("{id}")]
+        [Authorize]
         public ActionResult GetInvoice([FromRoute]int id)
         {
             var invoice = _invoiceService.GetInvoiceForSpecifiedAccount(id);

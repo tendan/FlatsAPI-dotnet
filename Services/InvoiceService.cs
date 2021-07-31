@@ -18,6 +18,7 @@ using iText.Kernel.Pdf.Navigation;
 using iText.Kernel.Pdf.Action;
 using iText.Kernel.Font;
 using iText.IO.Font;
+using FlatsAPI.Settings.Permissions;
 
 namespace FlatsAPI.Services
 {
@@ -29,10 +30,12 @@ namespace FlatsAPI.Services
     {
         private const string DateFormat = "yyyy-MM-dd";
         private readonly FlatsDbContext _dbContext;
+        private readonly IUserContextService _userContextService;
 
-        public InvoiceService(FlatsDbContext dbContext)
+        public InvoiceService(FlatsDbContext dbContext, IUserContextService userContextService)
         {
             _dbContext = dbContext;
+            _userContextService = userContextService;
         }
 
         public Invoice GetInvoiceForSpecifiedAccount(int accountId)
@@ -41,6 +44,8 @@ namespace FlatsAPI.Services
 
             if (account is null)
                 throw new NotFoundException("Account not found");
+
+            _userContextService.AuthorizeAccess(accountId, InvoicePermissions.ReadOthers);
 
             if (account.BillingAddress is null)
                 throw new ForbiddenException("Billing address is missing");
