@@ -13,7 +13,8 @@ namespace FlatsAPI.Settings.Roles
         public static ICollection<string> Permissions { get; } = new List<string>()
         {
             BlockOfFlatsPermissions.Read,
-            FlatPermissions.Read
+            FlatPermissions.Read,
+            InvoicePermissions.Read,
         };
     }
 }

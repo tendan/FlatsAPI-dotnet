@@ -61,7 +61,8 @@ namespace FlatsAPI.Services
             {
                 new AccountPermissions(),
                 new BlockOfFlatsPermissions(),
-                new FlatPermissions()
+                new FlatPermissions(),
+                new InvoicePermissions(),
             };
 
             var fields = new List<FieldInfo>();

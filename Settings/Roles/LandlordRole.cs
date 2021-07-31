@@ -20,7 +20,8 @@ namespace FlatsAPI.Settings.Roles
             FlatPermissions.Read,
             FlatPermissions.Update,
             FlatPermissions.Delete,
-            FlatPermissions.ApplyTenant
+            FlatPermissions.ApplyTenant,
+            InvoicePermissions.Read,
         };
     }
 }
