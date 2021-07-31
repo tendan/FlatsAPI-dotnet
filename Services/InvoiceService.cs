@@ -13,6 +13,11 @@ using FlatsAPI.Models;
 using iText.Layout.Borders;
 using FlatsAPI.Exceptions;
 using Microsoft.EntityFrameworkCore;
+using iText.Kernel.Pdf.Annot;
+using iText.Kernel.Pdf.Navigation;
+using iText.Kernel.Pdf.Action;
+using iText.Kernel.Font;
+using iText.IO.Font;
 
 namespace FlatsAPI.Services
 {
@@ -60,11 +65,14 @@ namespace FlatsAPI.Services
         {
             var accountRents = account.Rents;
 
+            var primaryFont = PdfFontFactory.CreateFont(DocumentSettings.LiberationSansFontPath, PdfEncodings.IDENTITY_H);
+            var secondaryFont = PdfFontFactory.CreateFont(DocumentSettings.LiberationSansFontPath, PdfEncodings.IDENTITY_H);
+
             using var stream = new MemoryStream();
             using var writer = new PdfWriter(stream);
             using var pdf = new PdfDocument(writer);
             using var document = new Document(pdf)
-                .SetFont(DocumentSettings.SecondaryFont)
+                .SetFont(secondaryFont)
                 .SetFontSize(12);
             
             var beginning = GenerateBeginning();
@@ -78,12 +86,15 @@ namespace FlatsAPI.Services
             var vatSummary = nettoAndVat.VatSummary;
 
             var summaryTable = GenerateSummaryTable(nettoSummary, vatSummary);
-            
+
+            var footer = GenerateFooter(pdf.GetDefaultPageSize().GetHeight());
+
             document
                 .Add(beginning)
                 .Add(buyerSellerChapter)
                 .Add(rentsTable)
-                .Add(summaryTable);
+                .Add(summaryTable)
+                .Add(footer);
 
             var generatedId = new Random().Next();
 
@@ -341,6 +352,32 @@ namespace FlatsAPI.Services
                 .SetTextAlignment(TextAlignment.RIGHT);
 
             return table;
+        }
+        private Div GenerateFooter(float pageHeight)
+        {
+            var footer = new Div()
+                .SetFixedPosition(0, 0, UnitValue.CreatePercentValue(80))
+                .SetMargin(0)
+                .SetPadding(0);
+
+            var link = new Link(
+                        "https://github.com/TenDan/FlatsAPI-dotnet",
+                        PdfAction.CreateURI("https://github.com/TenDan/FlatsAPI-dotnet")
+                    );
+
+            var paragraph = new Paragraph(
+                "This invoice is not real, it is a part of a Flats Of Blocks project on GitHub.\n"
+                )
+                .SetFontSize(14)
+                .SetBold()
+                .SetMargin(7)
+                .SetPaddingBottom(0);
+
+            paragraph.Add(link);
+
+            footer.Add(paragraph);
+
+            return footer;
         }
         private NettoAndVat CalculateSummaryOfNettoAndVat(ICollection<Rent> rents)
         {
