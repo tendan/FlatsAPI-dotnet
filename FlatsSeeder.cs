@@ -196,7 +196,28 @@ namespace FlatsAPI
 
             var permissionsInDb = _dbContext.Permissions.ToList();
 
-            foreach (var permission in permissions)
+            AddPermissions(permissions, permissionsInDb);
+            RemovePermissions(permissions, permissionsInDb);
+
+            _logger.LogInformation("Saved permissions to DB");
+            _dbContext.SaveChanges();
+        }
+
+        private void RemovePermissions(ICollection<Permission> permissionsFromInstance, List<Permission> permissionsInDb)
+        {
+            foreach (var permissionInDb in permissionsInDb)
+            {
+                if (!permissionsFromInstance.Any(p => p.Name == permissionInDb.Name))
+                {
+                    _logger.LogInformation($"Permission {permissionInDb.Name} removed from DB");
+                    _dbContext.Permissions.Remove(permissionInDb);
+                }
+            }
+        }
+
+        private void AddPermissions(ICollection<Permission> permissionsFromInstance, List<Permission> permissionsInDb)
+        {
+            foreach (var permission in permissionsFromInstance)
             {
                 if (!permissionsInDb.Any(p => p.Name == permission.Name))
                 {
@@ -204,18 +225,6 @@ namespace FlatsAPI
                     _dbContext.Permissions.Add(permission);
                 }
             }
-
-            foreach (var permissionInDb in permissionsInDb)
-            {
-                if (!permissions.Any(p => p.Name == permissionInDb.Name))
-                {
-                    _logger.LogInformation($"Permission {permissionInDb.Name} removed from DB");
-                    _dbContext.Permissions.Remove(permissionInDb);
-                }
-            }
-
-            _logger.LogInformation("Saved permissions to DB");
-            _dbContext.SaveChanges();
         }
 
         private void SetRoles()
@@ -224,7 +233,39 @@ namespace FlatsAPI
 
             var rolesInDb = _dbContext.Roles.Include(r => r.Permissions).ToList();
 
-            foreach (var role in roles)
+            AddRoles(roles, rolesInDb);
+            RemoveRoles(roles, rolesInDb);
+
+            _logger.LogInformation("Saved roles to DB");
+            _dbContext.SaveChanges();
+        }
+
+        private void RemoveRoles(ICollection<Role> rolesFromInstance, List<Role> rolesInDb)
+        {
+            foreach (var roleinDb in rolesInDb)
+            {
+                if (!rolesFromInstance.Any(r => r.Name == roleinDb.Name))
+                {
+                    _logger.LogInformation($"Role {roleinDb.Name} removed from DB");
+                    _dbContext.Remove(roleinDb);
+                    continue;
+                }
+                foreach (var permission in roleinDb.Permissions.ToList())
+                {
+                    var roleFromSingleton = rolesFromInstance.FirstOrDefault(r => r.Name == roleinDb.Name);
+
+                    if (!roleFromSingleton.Permissions.Any(p => p.Name == permission.Name))
+                    {
+                        _logger.LogInformation($"Permission {permission.Name} removed from {roleinDb.Name} role");
+                        _dbContext.Remove(roleinDb);
+                    }
+                }
+            }
+        }
+
+        private void AddRoles(ICollection<Role> rolesFromInstance, List<Role> rolesInDb)
+        {
+            foreach (var role in rolesFromInstance)
             {
                 if (!rolesInDb.Any(r => r.Name == role.Name))
                 {
@@ -244,29 +285,6 @@ namespace FlatsAPI
                     }
                 }
             }
-
-            foreach (var roleinDb in rolesInDb)
-            {
-                if (!roles.Any(r => r.Name == roleinDb.Name))
-                {
-                    _logger.LogInformation($"Role {roleinDb.Name} removed from DB");
-                    _dbContext.Remove(roleinDb);
-                    continue;
-                }
-                foreach (var permission in roleinDb.Permissions.ToList())
-                {
-                    var roleFromSingleton = roles.FirstOrDefault(r => r.Name == roleinDb.Name);
-
-                    if (!roleFromSingleton.Permissions.Any(p => p.Name == permission.Name))
-                    {
-                        _logger.LogInformation($"Permission {permission.Name} removed from {roleinDb.Name} role");
-                        _dbContext.Remove(roleinDb);
-                    }
-                }
-            }
-
-            _logger.LogInformation("Saved roles to DB");
-            _dbContext.SaveChanges();
         }
 
         private ICollection<Permission> GetTenantPermissions()
