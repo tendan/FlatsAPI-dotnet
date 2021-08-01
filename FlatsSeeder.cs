@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using System.Reflection;
 using FlatsAPI.Settings.Roles;
 using FlatsAPI.Services;
+using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 
 namespace FlatsAPI
 {
@@ -15,36 +17,24 @@ namespace FlatsAPI
         private readonly FlatsDbContext _dbContext;
         private readonly IPasswordHasher<Account> _passwordHasher;
         private readonly IPermissionContext _permissionContext;
+        private readonly ILogger<FlatsSeeder> _logger;
 
-        public FlatsSeeder(FlatsDbContext dbContext, IPasswordHasher<Account> passwordHasher, IPermissionContext permissionContext)
+        public FlatsSeeder(FlatsDbContext dbContext, 
+            IPasswordHasher<Account> passwordHasher, 
+            IPermissionContext permissionContext,
+            ILogger<FlatsSeeder> logger)
         {
             _dbContext = dbContext;
             _passwordHasher = passwordHasher;
             _permissionContext = permissionContext;
+            _logger = logger;
         }
         public void Seed()
         {
             if (_dbContext.Database.CanConnect())
             {
-                /*if (_dbContext.Roles.Any())
-                {*/
-                /*_dbContext.Roles.RemoveRange(_dbContext.Roles.ToList());
-                _dbContext.Accounts.RemoveRange(_dbContext.Accounts.ToList());
-                _dbContext.Permissions.RemoveRange(_dbContext.Permissions.ToList());
-                _dbContext.SaveChanges();*/
-                /*}*/
-                if (!_dbContext.Permissions.Any())
-                {
-                    var permissions = GetPermissions();
-                    _dbContext.Permissions.AddRange(permissions);
-                    _dbContext.SaveChanges();
-                }
-                if (!_dbContext.Roles.Any())
-                {
-                    var roles = GetRoles();
-                    _dbContext.Roles.AddRange(roles);
-                    _dbContext.SaveChanges();
-                }
+                SetPermissions();
+                SetRoles();
                 if (!_dbContext.Accounts.Any())
                 {
                     var accounts = GetAccounts();
@@ -181,7 +171,7 @@ namespace FlatsAPI
                 {
                     Name = AdminRole.Name,
                     Permissions = GetAdminPermissions()
-                }
+                },
             };
             return roles;
         }
@@ -191,7 +181,6 @@ namespace FlatsAPI
             var permissions = new List<Permission>();
 
             var permissionStrings = _permissionContext.GetAllModulesPermissions();
-
             
             foreach (var permission in permissionStrings)
             {
@@ -199,6 +188,85 @@ namespace FlatsAPI
             }
 
             return permissions;
+        }
+
+        private void SetPermissions()
+        {
+            var permissions = GetPermissions();
+
+            var permissionsInDb = _dbContext.Permissions.ToList();
+
+            foreach (var permission in permissions)
+            {
+                if (!permissionsInDb.Any(p => p.Name == permission.Name))
+                {
+                    _logger.LogInformation($"Permission {permission.Name} added to DB");
+                    _dbContext.Permissions.Add(permission);
+                }
+            }
+
+            foreach (var permissionInDb in permissionsInDb)
+            {
+                if (!permissions.Any(p => p.Name == permissionInDb.Name))
+                {
+                    _logger.LogInformation($"Permission {permissionInDb.Name} removed from DB");
+                    _dbContext.Permissions.Remove(permissionInDb);
+                }
+            }
+
+            _logger.LogInformation("Saved permissions to DB");
+            _dbContext.SaveChanges();
+        }
+
+        private void SetRoles()
+        {
+            var roles = GetRoles();
+
+            var rolesInDb = _dbContext.Roles.Include(r => r.Permissions).ToList();
+
+            foreach (var role in roles)
+            {
+                if (!rolesInDb.Any(r => r.Name == role.Name))
+                {
+                    _logger.LogInformation($"Role {role.Name} added to DB");
+                    _dbContext.Add(role);
+                    continue;
+                }
+                foreach (var permission in role.Permissions.ToList())
+                {
+                    var roleFromDb = rolesInDb.FirstOrDefault(r => r.Name == role.Name);
+
+                    if (!roleFromDb.Permissions.Any(p => p.Name == permission.Name))
+                    {
+                        _logger.LogInformation($"Permission {permission.Name} added to {role.Name} role");
+                        roleFromDb.Permissions.Add(permission);
+                        _dbContext.Update(roleFromDb);
+                    }
+                }
+            }
+
+            foreach (var roleinDb in rolesInDb)
+            {
+                if (!roles.Any(r => r.Name == roleinDb.Name))
+                {
+                    _logger.LogInformation($"Role {roleinDb.Name} removed from DB");
+                    _dbContext.Remove(roleinDb);
+                    continue;
+                }
+                foreach (var permission in roleinDb.Permissions.ToList())
+                {
+                    var roleFromSingleton = roles.FirstOrDefault(r => r.Name == roleinDb.Name);
+
+                    if (!roleFromSingleton.Permissions.Any(p => p.Name == permission.Name))
+                    {
+                        _logger.LogInformation($"Permission {permission.Name} removed from {roleinDb.Name} role");
+                        _dbContext.Remove(roleinDb);
+                    }
+                }
+            }
+
+            _logger.LogInformation("Saved roles to DB");
+            _dbContext.SaveChanges();
         }
 
         private ICollection<Permission> GetTenantPermissions()
