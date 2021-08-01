@@ -58,6 +58,7 @@ namespace FlatsAPI.Services.Scheduled
                         await rentContext.GenerateRentsForOwnerByIdAsync(account.Id, cancellationToken);
                         await rentContext.AddTenantRentsAsync(account.Id, cancellationToken);
                     }
+                    await Task.Delay(5000, cancellationToken);
                 }
             }
         }
