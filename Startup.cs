@@ -97,7 +97,7 @@ namespace FlatsAPI
             services.AddServices();
 
             // Hosted services
-            services.AddHostedService<RentHostedService>();
+            services.AddHostedServices();
             
             // Helpers
             services.AddScoped<FlatsSeeder>();
