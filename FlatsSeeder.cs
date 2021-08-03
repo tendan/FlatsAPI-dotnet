@@ -196,13 +196,82 @@ namespace FlatsAPI
 
             var permissionsInDb = _dbContext.Permissions.ToList();
 
-            AddPermissions(permissions, permissionsInDb);
-            RemovePermissions(permissions, permissionsInDb);
+            AddEntities(permissions, permissionsInDb);
+            RemoveEntities(permissions, permissionsInDb);
 
             _logger.LogInformation("Saved permissions to DB");
             _dbContext.SaveChanges();
         }
 
+        private void AddEntities<T>(ICollection<T> entitiesFromInstance, IEnumerable<T> entitiesInDb) where T : INameable, new()
+        {
+            _logger.LogInformation($"Check for {typeof(T).GetTypeInfo().Name} additional changes");
+            foreach (var entityFromInstance in entitiesFromInstance)
+            {
+                if (!entitiesInDb.Any(r => r.Name == entityFromInstance.Name))
+                {
+                    _logger.LogInformation($"Role {entityFromInstance.Name} added to DB");
+                    _dbContext.Add(entityFromInstance);
+                    continue;
+                }
+                if (entityFromInstance is Permission) continue;
+                _logger.LogInformation($"Check for {typeof(T).Name}'s permissions additional changes");
+                // If it is a role, do a permission add to role everytime it should happen
+                foreach (var permission in (entityFromInstance as Role).Permissions.ToList())
+                {
+                    var roleFromDb = entitiesInDb.FirstOrDefault(r => r.Name == entityFromInstance.Name) as Role;
+
+                    if (!roleFromDb.Permissions.Any(p => p.Name == permission.Name))
+                    {
+                        _logger.LogInformation($"Permission {permission.Name} added to {entityFromInstance.Name} role");
+                        roleFromDb.Permissions.Add(permission);
+                        _dbContext.Update(roleFromDb);
+                    }
+                }
+            }
+        }
+
+        private void RemoveEntities<T>(ICollection<T> entitiesFromInstance, IEnumerable<T> entitiesInDb) where T : INameable, new()
+        {
+            _logger.LogInformation($"Check for {typeof(T).GetTypeInfo().Name} removal changes");
+            foreach (var entityInDb in entitiesInDb.ToList())
+            {
+                if (!entitiesFromInstance.Any(p => p.Name == entityInDb.Name))
+                {
+                    _logger.LogInformation($"{entityInDb.GetType()} {entityInDb.Name} removed from DB");
+                    _dbContext.Remove(entityInDb);
+                    continue;
+                }
+                if (entityInDb is Permission) continue;
+                _logger.LogInformation($"Check for {typeof(T).Name} permission removal changes");
+                // If it is a role, do a permission removal from roles everytime it should happen
+                foreach (var subEntityInDb in (entityInDb as Role).Permissions.ToList())
+                {
+                    var entityFromSingleton = (entitiesFromInstance as IEnumerable<Role>).FirstOrDefault(r => r.Name == entityInDb.Name);
+
+                    if (!entityFromSingleton.Permissions.Any(p => p.Name == subEntityInDb.Name))
+                    {
+                        _logger.LogInformation($"Permission {subEntityInDb.Name} removed from {entityInDb.Name} role");
+                        _dbContext.Remove(entityInDb);
+                    }
+                }
+            }
+        }
+
+        private void SetRoles()
+        {
+            var roles = GetRoles();
+
+            var rolesInDb = _dbContext.Roles.Include(r => r.Permissions).ToList();
+
+            AddEntities(roles, rolesInDb);
+            RemoveEntities(roles, rolesInDb);
+
+            _logger.LogInformation("Saved roles to DB");
+            _dbContext.SaveChanges();
+        }
+
+        [Obsolete]
         private void RemovePermissions(ICollection<Permission> permissionsFromInstance, List<Permission> permissionsInDb)
         {
             foreach (var permissionInDb in permissionsInDb)
@@ -215,6 +284,7 @@ namespace FlatsAPI
             }
         }
 
+        [Obsolete]
         private void AddPermissions(ICollection<Permission> permissionsFromInstance, List<Permission> permissionsInDb)
         {
             foreach (var permission in permissionsFromInstance)
@@ -227,19 +297,7 @@ namespace FlatsAPI
             }
         }
 
-        private void SetRoles()
-        {
-            var roles = GetRoles();
-
-            var rolesInDb = _dbContext.Roles.Include(r => r.Permissions).ToList();
-
-            AddRoles(roles, rolesInDb);
-            RemoveRoles(roles, rolesInDb);
-
-            _logger.LogInformation("Saved roles to DB");
-            _dbContext.SaveChanges();
-        }
-
+        [Obsolete]
         private void RemoveRoles(ICollection<Role> rolesFromInstance, List<Role> rolesInDb)
         {
             foreach (var roleinDb in rolesInDb)
@@ -263,6 +321,7 @@ namespace FlatsAPI
             }
         }
 
+        [Obsolete]
         private void AddRoles(ICollection<Role> rolesFromInstance, List<Role> rolesInDb)
         {
             foreach (var role in rolesFromInstance)

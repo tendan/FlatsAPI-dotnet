@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FlatsAPI.Entities
 {
-    public class Permission
+    public class Permission : INameable
     {
         public int Id { get; set; }
 

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FlatsAPI.Entities
 {
-    public class Role
+    public class Role : INameable
     {
         public int Id { get; set; }
         [Required]
