@@ -9,6 +9,7 @@ using FlatsAPI.Settings.Roles;
 using FlatsAPI.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using FlatsAPI.Models.Interfaces;
 
 namespace FlatsAPI
 {
@@ -203,7 +204,7 @@ namespace FlatsAPI
             _dbContext.SaveChanges();
         }
 
-        private void AddEntities<T>(ICollection<T> entitiesFromInstance, IEnumerable<T> entitiesInDb) where T : INameable, new()
+        private void AddEntities<T>(IEnumerable<T> entitiesFromInstance, IEnumerable<T> entitiesInDb) where T : INameable, new()
         {
             _logger.LogInformation($"Check for {typeof(T).GetTypeInfo().Name} additional changes");
             foreach (var entityFromInstance in entitiesFromInstance)
@@ -231,7 +232,7 @@ namespace FlatsAPI
             }
         }
 
-        private void RemoveEntities<T>(ICollection<T> entitiesFromInstance, IEnumerable<T> entitiesInDb) where T : INameable, new()
+        private void RemoveEntities<T>(IEnumerable<T> entitiesFromInstance, IEnumerable<T> entitiesInDb) where T : INameable, new()
         {
             _logger.LogInformation($"Check for {typeof(T).GetTypeInfo().Name} removal changes");
             foreach (var entityInDb in entitiesInDb.ToList())
