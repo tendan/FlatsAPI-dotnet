@@ -248,7 +248,7 @@ namespace FlatsAPI
                 // If it is a role, do a permission removal from roles everytime it should happen
                 foreach (var subEntityInDb in (entityInDb as Role).Permissions.ToList())
                 {
-                    var entityFromSingleton = (entitiesFromInstance as IEnumerable<Role>).FirstOrDefault(r => r.Name == entityInDb.Name);
+                    var entityFromSingleton = entitiesFromInstance.FirstOrDefault(r => r.Name == entityInDb.Name) as Role;
 
                     if (!entityFromSingleton.Permissions.Any(p => p.Name == subEntityInDb.Name))
                     {
