@@ -83,7 +83,10 @@ namespace FlatsAPI.Services
 
         public ICollection<Permission> GetAllAccountPermissionsById(int accountId)
         {
-            var account = _dbContext.Accounts.Include(a => a.Role).FirstOrDefault(a => a.Id == accountId);
+            var account = _dbContext.Accounts
+                .Include(a => a.Role)
+                .Include(a => a.Role.Permissions)
+                .FirstOrDefault(a => a.Id == accountId);
 
             return account.Role.Permissions;
         }
