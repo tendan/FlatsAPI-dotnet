@@ -48,7 +48,12 @@ namespace FlatsAPI.Services
             _userContextService.AuthorizeAccess(accountId, InvoicePermissions.ReadOthers);
 
             if (account.BillingAddress is null)
-                throw new ForbiddenException("Billing address is missing");
+            {
+                if (accountId == _userContextService.GetUserId)
+                    throw new ForbiddenException("Billing address is missing");
+
+                throw new BadRequestException("Account does not have billing address");
+            }
 
             if (!account.Rents.Any())
                 throw new BadRequestException("No rents were found");
