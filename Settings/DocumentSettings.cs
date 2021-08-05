@@ -13,8 +13,8 @@ namespace FlatsAPI.Settings
 {
     public class DocumentSettings
     {
-        public static string CurrentDirectory = Directory.GetCurrentDirectory();
-        public static string LiberationSansFontPath = CurrentDirectory + @"\Static\Fonts\LiberationSans.ttf";
-        public static Color TableHeaderCellColor { get; } = new DeviceRgb(220, 220, 220);
+        public static readonly string CurrentDirectory = Directory.GetCurrentDirectory();
+        public static readonly string LiberationSansFontPath = CurrentDirectory + @"\Static\Fonts\LiberationSans.ttf";
+        public static readonly Color TableHeaderCellColor = new DeviceRgb(220, 220, 220);
     }
 }
