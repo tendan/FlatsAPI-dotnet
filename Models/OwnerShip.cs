@@ -1,7 +1,6 @@
-﻿namespace FlatsAPI.Models
+﻿namespace FlatsAPI.Models;
+
+public enum OwnerShip
 {
-    public enum OwnerShip
-    {
-        RENTED, BOUGHT
-    }
+    RENTED, BOUGHT
 }

@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30804.86
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlatsAPI", "FlatsAPI.csproj", "{5C1C745D-C233-4902-B39D-4F1ABF8170CB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FlatsAPI", "FlatsAPI.csproj", "{5C1C745D-C233-4902-B39D-4F1ABF8170CB}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DFE696D9-E9BB-4722-BC2C-5C1A6BEEDA66}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

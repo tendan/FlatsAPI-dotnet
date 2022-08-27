@@ -1,14 +1,9 @@
-﻿using FlatsAPI.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace FlatsAPI.Settings.Roles
+namespace FlatsAPI.Settings.Roles;
+
+interface IRole
 {
-    interface IRole
-    {
-        public static string Name { get; }
-        public static ICollection<string> Permissions { get; }
-    }
+    public static string Name { get; }
+    public static ICollection<string> Permissions { get; }
 }

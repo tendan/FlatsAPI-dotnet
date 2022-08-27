@@ -17,10 +17,10 @@ Available features for now:
 - Invoices generating based on account rents
 
 Dependencies used in this project:
-- AutoMapper.Extensions.Microsoft.DependencyInjection (8.1.1)
-- FluentValidation (10.3.0)
-- Microsoft.AspNetCore.Authentication.JwtBearer (5.0.8)
-- Microsoft.EntityFrameworkCore (5.0.8)
-- Microsoft.EntityFrameworkCore.SqlServer (5.0.8)
-- Microsoft.EntityFrameworkCore.Tools (5.0.8)
-- itext7 (7.1.16)
+- AutoMapper.Extensions.Microsoft.DependencyInjection
+- FluentValidation
+- Microsoft.AspNetCore.Authentication.JwtBearer
+- Microsoft.EntityFrameworkCore
+- Microsoft.EntityFrameworkCore.SqlServer
+- Microsoft.EntityFrameworkCore.Tools
+- itext7

@@ -1,65 +1,57 @@
 ﻿using FlatsAPI.Entities;
-using FlatsAPI.Exceptions;
-using FlatsAPI.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
-namespace FlatsAPI.Services.Scheduled
+namespace FlatsAPI.Services.Scheduled;
+
+public class RentHostedService : BackgroundService
 {
-    public class RentHostedService : BackgroundService
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly ILogger<RentHostedService> _logger;
+
+    public RentHostedService(IServiceScopeFactory scopeFactory, ILogger<RentHostedService> logger)
     {
-        private readonly IServiceScopeFactory _scopeFactory;
-        private readonly ILogger<RentHostedService> _logger;
+        _scopeFactory = scopeFactory;
+        _logger = logger;
+    }
 
-        public RentHostedService(IServiceScopeFactory scopeFactory, ILogger<RentHostedService> logger)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Rent Hosted Service Running");
+
+        await GenerateRents(cancellationToken);
+    }
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Rent Hosted Service stopped");
+
+        await base.StopAsync(cancellationToken);
+    }
+
+    public async Task GenerateRents(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Generating rents...");
+        using (var scope = _scopeFactory.CreateScope())
         {
-            _scopeFactory = scopeFactory;
-            _logger = logger;
-        }
 
-        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Rent Hosted Service Running");
+            var dbContext = scope.ServiceProvider.GetRequiredService<FlatsDbContext>();
 
-            await GenerateRents(cancellationToken);
-        }
-        public override async Task StopAsync(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Rent Hosted Service stopped");
+            var rentContext = scope.ServiceProvider.GetRequiredService<IRentService>();
 
-            await base.StopAsync(cancellationToken);
-        }
+            //using var context = new FlatsDbContext();
 
-        public async Task GenerateRents(CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Generating rents...");
-            using (var scope = _scopeFactory.CreateScope())
+            while (!cancellationToken.IsCancellationRequested)
             {
-
-                var dbContext = scope.ServiceProvider.GetRequiredService<FlatsDbContext>();
-
-                var rentContext = scope.ServiceProvider.GetRequiredService<IRentService>();
-
-                //using var context = new FlatsDbContext();
-
-                while (!cancellationToken.IsCancellationRequested)
+                foreach (var account in dbContext.Accounts.ToList())
                 {
-                    foreach (var account in dbContext.Accounts.ToList())
-                    {
-                        await rentContext.GenerateRentsForOwnerByIdAsync(account.Id, cancellationToken);
-                        await rentContext.AddTenantRentsAsync(account.Id, cancellationToken);
-                    }
-                    await Task.Delay(5000, cancellationToken);
+                    await rentContext.GenerateRentsForOwnerByIdAsync(account.Id, cancellationToken);
+                    await rentContext.AddTenantRentsAsync(account.Id, cancellationToken);
                 }
+                await Task.Delay(5000, cancellationToken);
             }
         }
     }

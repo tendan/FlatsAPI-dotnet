@@ -1,42 +1,37 @@
 ﻿using FlatsAPI.Settings.Permissions;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 
-namespace FlatsAPI.Settings.Roles
+namespace FlatsAPI.Settings.Roles;
+
+public class AdminRole : IRole
 {
-    public class AdminRole : IRole
+    private static ICollection<string> _permissions = new List<string>();
+
+    static AdminRole()
     {
-        private static ICollection<string> _permissions = new List<string>();
-
-        static AdminRole()
+        var permissionsFields = new List<IPermissions>()
         {
-            var permissionsFields = new List<IPermissions>()
-            {
-                new AccountPermissions(),
-                new BlockOfFlatsPermissions(),
-                new FlatPermissions(),
-                new InvoicePermissions(),
-            };
+            new AccountPermissions(),
+            new BlockOfFlatsPermissions(),
+            new FlatPermissions(),
+            new InvoicePermissions(),
+        };
 
-            var fields = new List<FieldInfo>();
+        var fields = new List<FieldInfo>();
 
-            foreach (var type in permissionsFields)
-            {
-                var properties = type.GetType().GetFields();
-                fields.AddRange(properties);
-            }
-
-            foreach (var property in fields)
-            {
-                _permissions.Add(property.GetValue(null).ToString());
-            }
+        foreach (var type in permissionsFields)
+        {
+            var properties = type.GetType().GetFields();
+            fields.AddRange(properties);
         }
-        public static string Name { get; } = "Admin";
 
-        public static ICollection<string> Permissions { get; } = _permissions;
+        foreach (var property in fields)
+        {
+            _permissions.Add(property.GetValue(null).ToString());
+        }
     }
+    public static string Name { get; } = "Admin";
+
+    public static ICollection<string> Permissions { get; } = _permissions;
 }

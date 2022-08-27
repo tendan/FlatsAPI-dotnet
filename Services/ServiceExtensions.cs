@@ -1,32 +1,27 @@
 ﻿using FlatsAPI.Services.Scheduled;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace FlatsAPI.Services
+namespace FlatsAPI.Services;
+
+public static class ServiceExtensions
 {
-    public static class ServiceExtensions
+    public static IServiceCollection AddServices(this IServiceCollection services)
     {
-        public static IServiceCollection AddServices(this IServiceCollection services)
-        {
-            services.AddTransient<IPermissionContext, PermissionContext>();
-            services.AddScoped<IUserContextService, UserContextService>();
-            services.AddScoped<IBlockOfFlatsService, BlockOfFlatsService>();
-            services.AddScoped<IFlatService, FlatService>();
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IInvoiceService, InvoiceService>();
-            services.AddTransient<IRentService, RentService>();
+        services.AddTransient<IPermissionContext, PermissionContext>();
+        services.AddScoped<IUserContextService, UserContextService>();
+        services.AddScoped<IBlockOfFlatsService, BlockOfFlatsService>();
+        services.AddScoped<IFlatService, FlatService>();
+        services.AddScoped<IAccountService, AccountService>();
+        services.AddScoped<IInvoiceService, InvoiceService>();
+        services.AddTransient<IRentService, RentService>();
 
-            return services;
-        }
+        return services;
+    }
 
-        public static IServiceCollection AddHostedServices(this IServiceCollection services)
-        {
-            services.AddHostedService<RentHostedService>();
+    public static IServiceCollection AddHostedServices(this IServiceCollection services)
+    {
+        services.AddHostedService<RentHostedService>();
 
-            return services;
-        }
+        return services;
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace FlatsAPI.Models
+﻿namespace FlatsAPI.Models;
+
+public enum SortDirection
 {
-    public enum SortDirection
-    {
-        ASC,
-        DESC
-    }
+    ASC,
+    DESC
 }
