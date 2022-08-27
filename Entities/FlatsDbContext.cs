@@ -86,7 +86,7 @@ namespace FlatsAPI.Entities
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(Configuration["ConnectionStrings:Default"]);
+            optionsBuilder.UseNpgsql(Configuration["ConnectionStrings:Default"]);
         }
     }
 }

@@ -3,8 +3,10 @@ using System;
 using FlatsAPI.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+
+#nullable disable
 
 namespace FlatsAPI.Migrations
 {
@@ -15,17 +17,18 @@ namespace FlatsAPI.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.8")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "6.0.8")
+                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+
+            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("AccountFlat", b =>
                 {
                     b.Property<int>("RentedFlatsId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("TenantsId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("RentedFlatsId", "TenantsId");
 
@@ -38,48 +41,49 @@ namespace FlatsAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BillingAddress")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("BillingAddress");
 
                     b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2")
+                        .HasColumnType("timestamp with time zone")
                         .HasColumnName("DateOfBirth");
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("Email");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("FirstName");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("LastName");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("Password");
 
                     b.Property<string>("PhoneNumber")
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("PhoneNumber");
 
                     b.Property<int>("RoleId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("RoleId");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("text")
                         .HasColumnName("Username");
 
                     b.HasKey("Id");
@@ -93,25 +97,26 @@ namespace FlatsAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<int>("Floors")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<float>("Margin")
                         .HasColumnType("real");
 
                     b.Property<int?>("OwnerId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<string>("PostalCode")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<float>("Price")
                         .HasColumnType("real");
@@ -127,26 +132,27 @@ namespace FlatsAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int>("Area")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("BlockOfFlatsId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Floor")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("Number")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("NumberOfRooms")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int?>("OwnerId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<float?>("PricePerMeterSquaredWhenRented")
                         .HasColumnType("real");
@@ -167,12 +173,13 @@ namespace FlatsAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -183,28 +190,29 @@ namespace FlatsAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<int?>("BlockOfFlatsPropertyId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<DateTime>("CreationDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<int?>("FlatPropertyId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("OwnerShip")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("OwnerShip");
 
                     b.Property<bool>("Paid")
-                        .HasColumnType("bit")
+                        .HasColumnType("boolean")
                         .HasColumnName("Paid");
 
                     b.Property<DateTime>("PayDate")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<float>("Price")
                         .HasColumnType("real")
@@ -215,14 +223,14 @@ namespace FlatsAPI.Migrations
                         .HasColumnName("PriceWithTax");
 
                     b.Property<int>("PropertyId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("PropertyId");
 
                     b.Property<int>("PropertyType")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("RentIssuerId")
-                        .HasColumnType("int")
+                        .HasColumnType("integer")
                         .HasColumnName("RentIssuerId");
 
                     b.HasKey("Id");
@@ -240,12 +248,13 @@ namespace FlatsAPI.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.HasKey("Id");
 
@@ -255,10 +264,10 @@ namespace FlatsAPI.Migrations
             modelBuilder.Entity("PermissionRole", b =>
                 {
                     b.Property<int>("PermissionsId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.Property<int>("RolesId")
-                        .HasColumnType("int");
+                        .HasColumnType("integer");
 
                     b.HasKey("PermissionsId", "RolesId");
 

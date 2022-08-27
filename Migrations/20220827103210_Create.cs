@@ -1,9 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
+
+#nullable disable
 
 namespace FlatsAPI.Migrations
 {
-    public partial class ResetAllMigrationsToMSSQLMigration : Migration
+    public partial class Create : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,9 +14,9 @@ namespace FlatsAPI.Migrations
                 name: "Permissions",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -24,9 +27,9 @@ namespace FlatsAPI.Migrations
                 name: "Roles",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -37,15 +40,17 @@ namespace FlatsAPI.Migrations
                 name: "Accounts",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Email = table.Column<string>(type: "text", nullable: false),
+                    Username = table.Column<string>(type: "text", nullable: false),
+                    FirstName = table.Column<string>(type: "text", nullable: false),
+                    LastName = table.Column<string>(type: "text", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Password = table.Column<string>(type: "text", nullable: false),
+                    BillingAddress = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    RoleId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -62,8 +67,8 @@ namespace FlatsAPI.Migrations
                 name: "PermissionRole",
                 columns: table => new
                 {
-                    PermissionsId = table.Column<int>(type: "int", nullable: false),
-                    RolesId = table.Column<int>(type: "int", nullable: false)
+                    PermissionsId = table.Column<int>(type: "integer", nullable: false),
+                    RolesId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,13 +91,13 @@ namespace FlatsAPI.Migrations
                 name: "BlockOfFlats",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Floors = table.Column<int>(type: "int", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    PostalCode = table.Column<string>(type: "text", nullable: false),
+                    Floors = table.Column<int>(type: "integer", nullable: false),
                     Margin = table.Column<float>(type: "real", nullable: false),
-                    OwnerId = table.Column<int>(type: "int", nullable: true),
+                    OwnerId = table.Column<int>(type: "integer", nullable: true),
                     Price = table.Column<float>(type: "real", nullable: false)
                 },
                 constraints: table =>
@@ -102,22 +107,21 @@ namespace FlatsAPI.Migrations
                         name: "FK_BlockOfFlats_Accounts_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "Accounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
                 name: "Flats",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Area = table.Column<int>(type: "int", nullable: false),
-                    Number = table.Column<int>(type: "int", nullable: false),
-                    NumberOfRooms = table.Column<int>(type: "int", nullable: false),
-                    Floor = table.Column<int>(type: "int", nullable: false),
-                    BlockOfFlatsId = table.Column<int>(type: "int", nullable: false),
-                    OwnerId = table.Column<int>(type: "int", nullable: true),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Area = table.Column<int>(type: "integer", nullable: false),
+                    Number = table.Column<int>(type: "integer", nullable: false),
+                    NumberOfRooms = table.Column<int>(type: "integer", nullable: false),
+                    Floor = table.Column<int>(type: "integer", nullable: false),
+                    BlockOfFlatsId = table.Column<int>(type: "integer", nullable: false),
+                    OwnerId = table.Column<int>(type: "integer", nullable: true),
                     PriceWhenBought = table.Column<float>(type: "real", nullable: false),
                     PricePerMeterSquaredWhenRented = table.Column<float>(type: "real", nullable: true)
                 },
@@ -128,8 +132,7 @@ namespace FlatsAPI.Migrations
                         name: "FK_Flats_Accounts_OwnerId",
                         column: x => x.OwnerId,
                         principalTable: "Accounts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Flats_BlockOfFlats_BlockOfFlatsId",
                         column: x => x.BlockOfFlatsId,
@@ -142,8 +145,8 @@ namespace FlatsAPI.Migrations
                 name: "AccountFlat",
                 columns: table => new
                 {
-                    RentedFlatsId = table.Column<int>(type: "int", nullable: false),
-                    TenantsId = table.Column<int>(type: "int", nullable: false)
+                    RentedFlatsId = table.Column<int>(type: "integer", nullable: false),
+                    TenantsId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -166,19 +169,19 @@ namespace FlatsAPI.Migrations
                 name: "Rents",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    PayDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Paid = table.Column<bool>(type: "bit", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CreationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PayDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Paid = table.Column<bool>(type: "boolean", nullable: false),
                     Price = table.Column<float>(type: "real", nullable: false),
-                    OwnerShip = table.Column<int>(type: "int", nullable: false),
+                    OwnerShip = table.Column<int>(type: "integer", nullable: false),
                     PriceWithTax = table.Column<float>(type: "real", nullable: false),
-                    RentIssuerId = table.Column<int>(type: "int", nullable: false),
-                    PropertyId = table.Column<int>(type: "int", nullable: false),
-                    BlockOfFlatsPropertyId = table.Column<int>(type: "int", nullable: true),
-                    FlatPropertyId = table.Column<int>(type: "int", nullable: true),
-                    PropertyType = table.Column<int>(type: "int", nullable: false)
+                    RentIssuerId = table.Column<int>(type: "integer", nullable: false),
+                    PropertyId = table.Column<int>(type: "integer", nullable: false),
+                    BlockOfFlatsPropertyId = table.Column<int>(type: "integer", nullable: true),
+                    FlatPropertyId = table.Column<int>(type: "integer", nullable: true),
+                    PropertyType = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -193,14 +196,12 @@ namespace FlatsAPI.Migrations
                         name: "FK_Rents_BlockOfFlats_BlockOfFlatsPropertyId",
                         column: x => x.BlockOfFlatsPropertyId,
                         principalTable: "BlockOfFlats",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Rents_Flats_FlatPropertyId",
                         column: x => x.FlatPropertyId,
                         principalTable: "Flats",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(

@@ -1,34 +1,22 @@
 using FlatsAPI.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using FluentValidation;
 using FluentValidation.AspNetCore;
-using FlatsAPI.Models;
 using FlatsAPI.Models.Validators;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using FlatsAPI.Services;
 using FlatsAPI.Middleware;
 using FlatsAPI.Settings;
-using FlatsAPI.Settings.Permissions;
 using Microsoft.AspNetCore.Authorization;
 using FlatsAPI.Authorization.Policies;
-using FlatsAPI.Authorization;
 using FlatsAPI.Authorization.Handlers;
 using FlatsAPI.Settings.Roles;
-using FlatsAPI.Services.Scheduled;
+using System;
 
 namespace FlatsAPI
 {
@@ -68,6 +56,8 @@ namespace FlatsAPI
                 };
             });
 
+            AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
             // Authorization config
             services.AddAuthorization();
 
@@ -77,7 +67,8 @@ namespace FlatsAPI
             // Roles
             services.AddRolesSingletons();
 
-            services.AddControllers().AddFluentValidation();
+            services.AddControllers();
+            services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
             services.AddDbContext<FlatsDbContext>();
             
             // Automapper
